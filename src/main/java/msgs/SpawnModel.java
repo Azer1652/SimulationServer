@@ -1,7 +1,9 @@
 package msgs;
 
 import edu.wpi.rail.jrosbridge.messages.Message;
+import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
+import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import edu.wpi.rail.jrosbridge.services.ServiceRequest;
 import edu.wpi.rail.jrosbridge.services.ServiceResponse;
 import edu.wpi.rail.jrosbridge.services.std.Empty;
@@ -29,7 +31,7 @@ public class SpawnModel extends ServiceRequest{
         this.model_name = model_name;
         this.model_xml = model_xml;
         this.robot_namespace = robot_namespace;
-        this.initial_pose = initial_pose;
+        this.initial_pose = new Pose(new Point(initial_pose.getPosition().getX(), initial_pose.getPosition().getY(), initial_pose.getPosition().getZ()), new Quaternion(initial_pose.getOrientation().getX(), initial_pose.getOrientation().getY(), initial_pose.getOrientation().getZ(), initial_pose.getOrientation().getW()));
         this.reference_frame = reference_frame;
     }
 

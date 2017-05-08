@@ -1,3 +1,4 @@
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import edu.wpi.rail.jrosbridge.Ros;
@@ -11,7 +12,7 @@ import msgs.ModelStates;
 import msgs.ModelState;
 import msgs.SpawnModel;
 
-import javax.json.Json;
+import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,12 +75,13 @@ public class Client {
 
     //get robots from client
     public void updateRobots(){
-        Topic echoBack = new Topic(ros, "/gazebo/model_states", "gazebo_msgs/ModelStates", 1000);
+        Topic echoBack = new Topic(ros, "/gazebo/model_states", "gazebo_msgs/ModelStates", 100);
         echoBack.subscribe(new TopicCallback() {
             //@Override
             public void handleMessage(Message message) {
-                Gson gson = new Gson();
-                ModelStates m = gson.fromJson(message.toJsonObject().toString(), ModelStates.class);
+                String s = message.toString();
+                ModelStates m = new Gson().fromJson(message.toString(), ModelStates.class);
+
                 int i = 0;
                 //Iterate all robots
                 for(String name : m.name){
@@ -88,10 +90,10 @@ public class Client {
                         //Add robots not yet tracked
                         synchronized (robots) {
                             if (!robots.contains(new Robot(m.name[i]))) {
-                                robots.add(SimServer.robotHandler.newRobot(m.name[i], m.pose[i], m.twist[i]));
+                                robots.add(SimServer.robotHandler.newRobot(m.name[i], m.pose.get(i), m.twist.get(i)));
                             } else {
                                 //Update robots already tracked
-                                robots.get(robots.indexOf(m.name[i])).updateRobot(m.pose[i], m.twist[i]);
+                                robots.get(robots.indexOf(new Robot(m.name[i]))).updateRobot(m.pose.get(i), m.twist.get(i));
                             }
                         }
                     }
@@ -115,7 +117,8 @@ public class Client {
             */
         //ServiceRequest request = new ServiceRequest("{\"model_name\": \"box" +robot.id+ "\"}");
 
-        SpawnModel request = new SpawnModel(robot.model_name, "<?xml version='1.0'?><sdf version ='1.6'>  <model name ='box"+robot.id+"'>    <pose>"+robot.pose.getPosition().getX()+" "+robot.pose.getPosition().getY()+" "+robot.pose.getPosition().getZ()+" "+robot.pose.getOrientation().getX()+" "+robot.pose.getOrientation().getY()+" "+robot.pose.getOrientation().getZ()+"</pose>    <link name ='link'>      <pose>0 0 .125 0 0 0</pose>      <collision name ='collision'>        <geometry>          <box><size>.33 .2 .09</size></box>        </geometry>      </collision>      <visual name ='visual'>        <geometry>          <box><size>.33 .2 .09</size></box>        </geometry>      </visual>    </link>  </model></sdf>", "", robot.pose, "world");
+        robot.refreshStrings();
+        SpawnModel request = new SpawnModel("box"+robot.id, "<?xml version='1.0'?><sdf version ='1.6'>  <model name ='box"+robot.id+"'>    <pose>"+robot.pose.getPosition().getX()+" "+robot.pose.getPosition().getY()+" "+robot.pose.getPosition().getZ()+" "+robot.pose.getOrientation().getX()+" "+robot.pose.getOrientation().getY()+" "+robot.pose.getOrientation().getZ()+"</pose>    <link name ='link'>      <pose>0 0 .125 0 0 0</pose>      <collision name ='collision'>        <geometry>          <box><size>.33 .2 .09</size></box>        </geometry>      </collision>      <visual name ='visual'>        <geometry>          <box><size>.33 .2 .09</size></box>        </geometry>      </visual>    </link>  </model></sdf>", "", robot.pose, "world");
         spawnModel.callServiceAndWait(request);
         robot.created = true;
         //ServiceResponse response = spawnModel.callServiceAndWait(request);
@@ -134,6 +137,7 @@ public class Client {
     //works
     public void updateRobot(Robot robot){
         Topic echo = new Topic(ros, "/gazebo/set_model_state", "gazebo_msgs/ModelState");
+        robot.refreshStrings();
         ModelState message = new ModelState("box" + robot.id, robot.pose, robot.twist, "world");
         echo.publish(message);
     }

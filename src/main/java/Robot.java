@@ -1,5 +1,4 @@
-import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
-import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
+import edu.wpi.rail.jrosbridge.messages.geometry.*;
 
 /**
  * Created by arthur on 06.05.17.
@@ -27,6 +26,11 @@ public class Robot {
     public void updateRobot(Pose pose, Twist twist){
         this.pose=pose;
         this.twist=twist;
+    }
+
+    public void refreshStrings(){
+        pose = new Pose(new Point(pose.getPosition().getX(), pose.getPosition().getY(), pose.getPosition().getZ()), new Quaternion(pose.getOrientation().getX(), pose.getOrientation().getY(), pose.getOrientation().getZ(), pose.getOrientation().getW()));
+        twist = new Twist(new Vector3(twist.getLinear().getX(), twist.getLinear().getY(), twist.getLinear().getZ()), new Vector3(twist.getAngular().getX(), twist.getAngular().getY(), twist.getAngular().getZ()));
     }
 
     @Override
