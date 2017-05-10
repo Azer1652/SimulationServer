@@ -3,6 +3,14 @@ package SimServer; /**
  */
 
 import clients.Client;
+import clients.RealClient;
+import clients.SimulatedClient;
+import com.google.gson.Gson;
+import edu.wpi.rail.jrosbridge.messages.std.Header;
+import msgs.LaserScan;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 
 public class SimServer {
 
@@ -20,8 +28,9 @@ public class SimServer {
         Thread robotUpdater = new Thread(robotHandler);
 
         //TESTING CLIENTS
-        Client client1 = new Client("127.0.0.1", 9090);
-        Client client2 = new Client("127.0.0.1", 9091);
+        Client client1 = new RealClient("127.0.0.1", 9090, "helloo");
+        //Client client1 = new SimulatedClient("127.0.0.1", 9090);
+        //Client client2 = new SimulatedClient("127.0.0.1", 9091);
 
         //DISABLED FOR TESTING PURPOSES
         //Accept new clients and subscribe to topic for robot updates

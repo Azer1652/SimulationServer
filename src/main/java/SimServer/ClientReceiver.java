@@ -38,7 +38,7 @@ public class ClientReceiver implements Runnable{
             if(accepting){
                 try {
                     serverSocket.accept();
-                    simServer.addClient(new Client(serverSocket.getInetAddress().toString()));
+                    //simServer.addClient(new Client(serverSocket.getInetAddress().toString()));
                     serverSocket.close();
                 } catch (IOException e) {
                     System.err.println("Could not accept/close serverSocket connection");
