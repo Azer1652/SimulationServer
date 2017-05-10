@@ -31,12 +31,13 @@ public class LaserScan extends Message{
     private final Header header;
     private final float angle_min, angle_max, angle_increment, time_increment, scan_time, range_min, range_max;
     private final float[] ranges, intensities;
+    private JsonArrayBuilder rangeBuilder, intensityBuilder;
 
     public LaserScan(){
-        this(new Header(), 0,0,0,0,0,0,0, new float[]{1,2,3}, "[1,2,3]", new float[]{4,5,6}, "[4,5,6]");
+        this(new Header(), 0,0,0,0,0,0,0, new float[]{1,2,3}, Json.createArrayBuilder(), new float[]{4,5,6}, Json.createArrayBuilder());
     }
 
-    public LaserScan(Header header, float angle_min, float angle_max, float angle_increment, float time_increment, float scan_time, float range_min, float range_max,float[] ranges, String rangeString, float[] intensities, String intensityString){
+    public LaserScan(Header header, float angle_min, float angle_max, float angle_increment, float time_increment, float scan_time, float range_min, float range_max,float[] ranges, JsonArrayBuilder rangeBuilder, float[] intensities, JsonArrayBuilder intensityBuilder){
         super(Json.createObjectBuilder()
                 .add(LaserScan.HEADER, header.toJsonObject())
                 .add(LaserScan.ANGLE_MIN, angle_min)
@@ -46,11 +47,9 @@ public class LaserScan extends Message{
                 .add(LaserScan.SCAN_TIME, scan_time)
                 .add(LaserScan.RANGE_MIN, range_min)
                 .add(LaserScan.RANGE_MAX, range_max)
-                .add(LaserScan.RANGES, rangeString)
-                .add(LaserScan.INTENSITIES, intensityString)
+                .add(LaserScan.RANGES, rangeBuilder)
+                .add(LaserScan.INTENSITIES, intensityBuilder)
                 .build(),LaserScan.TYPE);
-        Float32[] test = new Float32[1080];
-        String s = test.toString();
         this.header=header;
         this.angle_min=angle_min;
         this.angle_max=angle_max;
@@ -61,6 +60,8 @@ public class LaserScan extends Message{
         this.range_max=range_max;
         this.ranges=ranges;
         this.intensities=intensities;
+        this.rangeBuilder=rangeBuilder;
+        this.intensityBuilder=intensityBuilder;
     }
 
     public Header getHeader() {
@@ -105,7 +106,7 @@ public class LaserScan extends Message{
 
     @Override
     public LaserScan clone() {
-        return new LaserScan(header,  angle_min,  angle_max,  angle_increment,  time_increment,  scan_time,  range_min,  range_max, ranges, new Gson().toJson(ranges).toString(), intensities, new Gson().toJson(intensities).toString());
+        return new LaserScan(header,  angle_min,  angle_max,  angle_increment,  time_increment,  scan_time,  range_min,  range_max, ranges, rangeBuilder, intensities, intensityBuilder);
     }
 
     public static LaserScan fromJsonString(String jsonString) {
@@ -134,29 +135,35 @@ public class LaserScan extends Message{
             double range_min = jsonObject.containsKey(LaserScan.RANGE_MIN) ? jsonObject.getJsonNumber(LaserScan.RANGE_MIN).doubleValue() : 0;
             double range_max = jsonObject.containsKey(LaserScan.RANGE_MAX) ? jsonObject.getJsonNumber(LaserScan.RANGE_MAX).doubleValue() : 30;
 
+            JsonArrayBuilder jsonRangeBuilder = Json.createArrayBuilder();
             JsonArray rangeArray = jsonObject.getJsonArray(LaserScan.RANGES);
             float[] ranges = new float[rangeArray.size()];
             for(int i = 0; i<rangeArray.size(); i++){
                 try{
                     JsonNumber jsonNumber = rangeArray.getJsonNumber(i);
                     ranges[i] = (float) jsonNumber.doubleValue();
+                    jsonRangeBuilder.add(jsonNumber);
                 }catch (Exception e){
-                    ranges[i] = (float) range_max;
+                    ranges[i] = 0;
+                    jsonRangeBuilder.add(0f);
                 }
             }
 
+            JsonArrayBuilder jsonIntensityBuilder = Json.createArrayBuilder();
             JsonArray intensityArray = jsonObject.getJsonArray(LaserScan.INTENSITIES);
             float[] intensities = new float[intensityArray.size()];
             for(int i = 0; i<intensityArray.size(); i++){
                 try{
                     JsonNumber jsonNumber = intensityArray.getJsonNumber(i);
-                    intensities[i] = (float)jsonNumber.doubleValue();
+                    intensities[i] = (float) jsonNumber.doubleValue();
+                    jsonIntensityBuilder.add(jsonNumber);
                 }catch (Exception e){
-                    intensities[i] = (float) range_max;
+                    intensities[i] = 0;
+                    jsonIntensityBuilder.add(0f);
                 }
             }
             
-            return new LaserScan(header, (float) angle_min, (float) angle_max, (float) angle_increment, (float) time_increment, (float) scan_time, (float) range_min, (float) range_max, ranges, new Gson().toJson(ranges), intensities, new Gson().toJson(intensities));
+            return new LaserScan(header, (float) angle_min, (float) angle_max, (float) angle_increment, (float) time_increment, (float) scan_time, (float) range_min, (float) range_max, ranges, jsonRangeBuilder, intensities, jsonIntensityBuilder);
         }catch (Exception e){
             e.printStackTrace();
             return new LaserScan();
