@@ -1,6 +1,9 @@
+package SimServer;
+
+import clients.Client;
+
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.List;
 
 /**
  * Created by arthur on 06.05.17.

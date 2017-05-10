@@ -1,3 +1,5 @@
+package SimServer;
+
 import edu.wpi.rail.jrosbridge.messages.geometry.*;
 
 /**
@@ -26,6 +28,10 @@ public class Robot {
     public void updateRobot(Pose pose, Twist twist){
         this.pose=pose;
         this.twist=twist;
+    }
+
+    public void updateRobot(Pose pose){
+        this.pose=pose;
     }
 
     public void refreshStrings(){

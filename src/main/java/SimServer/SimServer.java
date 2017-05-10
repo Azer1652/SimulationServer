@@ -1,23 +1,8 @@
-/**
+package SimServer; /**
  * Created by arthur on 04.05.17.
  */
 
-import com.google.gson.Gson;
-import edu.wpi.rail.jrosbridge.Ros;
-import edu.wpi.rail.jrosbridge.Service;
-import edu.wpi.rail.jrosbridge.Topic;
-import edu.wpi.rail.jrosbridge.callback.TopicCallback;
-import edu.wpi.rail.jrosbridge.messages.Message;
-import edu.wpi.rail.jrosbridge.messages.geometry.Point;
-import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
-import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
-import edu.wpi.rail.jrosbridge.services.ServiceRequest;
-import edu.wpi.rail.jrosbridge.services.ServiceResponse;
-import msgs.ModelStates;
-
-import javax.json.Json;
-import java.util.ArrayList;
-import java.util.List;
+import clients.Client;
 
 public class SimServer {
 

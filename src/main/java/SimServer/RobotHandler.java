@@ -1,3 +1,6 @@
+package SimServer;
+
+import clients.Client;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
 

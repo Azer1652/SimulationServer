@@ -1,31 +1,31 @@
+package clients;
 
+
+import SimServer.*;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import edu.wpi.rail.jrosbridge.Ros;
 import edu.wpi.rail.jrosbridge.Service;
 import edu.wpi.rail.jrosbridge.Topic;
 import edu.wpi.rail.jrosbridge.callback.TopicCallback;
 import edu.wpi.rail.jrosbridge.messages.Message;
 import edu.wpi.rail.jrosbridge.services.ServiceRequest;
-import edu.wpi.rail.jrosbridge.services.ServiceResponse;
-import msgs.ModelStates;
 import msgs.ModelState;
+import msgs.ModelStates;
 import msgs.SpawnModel;
 
-import java.io.IOException;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by arthur on 06.05.17.
  */
-public class Client {
+abstract public class Client {
 
-    private InetAddress ip;
-    private Ros ros;
+    protected InetAddress ip;
+    protected Ros ros;
 
     public List<Robot> robots = Collections.synchronizedList(new ArrayList<Robot>());
 
@@ -33,40 +33,34 @@ public class Client {
         try {
             this.ip = InetAddress.getByName(ip);
             ros = new Ros(ip);
-            ros.connect();
-
-            //Register client List<Robot> in robotHandler
-            SimServer.robotHandler.addClient(this);
-
-            //Get Robots
-            updateRobots();
 
         } catch (UnknownHostException e) {
-            System.err.println("Invalid Client URI");
+            System.err.println("Invalid clients.Client URI");
             if(SimServer.debug)
                 e.printStackTrace();
         }
     }
 
     public Client(String ip, int port){
-        robots = new ArrayList<Robot>();
-
         try {
             this.ip = InetAddress.getByName(ip);
             ros = new Ros(ip, port);
-            ros.connect();
-
-            //Register client List<Robot> in robotHandler
-            SimServer.robotHandler.addClient(this);
-
-            //Get Robots
-            updateRobots();
 
         } catch (UnknownHostException e) {
-            System.err.println("Invalid Client URI");
+            System.err.println("Invalid clients.Client URI");
             if(SimServer.debug)
                 e.printStackTrace();
         }
+    }
+
+    public void init(){
+        ros.connect();
+
+        //Register client List<SimServer.Robot> in robotHandler
+        SimServer.robotHandler.addClient(this);
+
+        //Get Robots
+        updateRobots();
     }
 
     public void closeRos(){
@@ -74,34 +68,7 @@ public class Client {
     }
 
     //get robots from client
-    public void updateRobots(){
-        Topic echoBack = new Topic(ros, "/gazebo/model_states", "gazebo_msgs/ModelStates", 100);
-        echoBack.subscribe(new TopicCallback() {
-            //@Override
-            public void handleMessage(Message message) {
-                String s = message.toString();
-                ModelStates m = new Gson().fromJson(message.toString(), ModelStates.class);
-
-                int i = 0;
-                //Iterate all robots
-                for(String name : m.name){
-                    //Add robots only robots
-                    if(name.contains("cylinder")){
-                        //Add robots not yet tracked
-                        synchronized (robots) {
-                            if (!robots.contains(new Robot(m.name[i]))) {
-                                robots.add(SimServer.robotHandler.newRobot(m.name[i], m.pose.get(i), m.twist.get(i)));
-                            } else {
-                                //Update robots already tracked
-                                robots.get(robots.indexOf(new Robot(m.name[i]))).updateRobot(m.pose.get(i), m.twist.get(i));
-                            }
-                        }
-                    }
-                    i++;
-                }
-            }
-        });
-    }
+    abstract public void updateRobots();
 
     //works
     public void createRobot(Robot robot){
