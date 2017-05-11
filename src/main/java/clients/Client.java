@@ -24,7 +24,8 @@ import java.util.List;
  */
 abstract public class Client {
 
-    protected InetAddress ip;
+    protected InetAddress ip; // IP address of the client
+    protected int port; // Port on which the client has connected
     protected Ros ros;
 
     public List<Robot> robots = Collections.synchronizedList(new ArrayList<Robot>());
@@ -41,16 +42,10 @@ abstract public class Client {
         }
     }
 
-    public Client(String ip, int port){
-        try {
-            this.ip = InetAddress.getByName(ip);
-            ros = new Ros(ip, port);
-
-        } catch (UnknownHostException e) {
-            System.err.println("Invalid clients.Client URI");
-            if(SimServer.debug)
-                e.printStackTrace();
-        }
+    public Client(InetAddress ip, int port){
+        this.ip = ip;
+        this.port = port;
+        ros = new Ros(ip.getHostAddress(), port);
     }
 
     public void init(){

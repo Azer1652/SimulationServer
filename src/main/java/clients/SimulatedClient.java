@@ -12,6 +12,7 @@ import msgs.ModelState;
 import msgs.ModelStates;
 import msgs.SpawnModel;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
  */
 public class SimulatedClient extends Client{
 
-    public SimulatedClient(String ip, int port){
+    public SimulatedClient(InetAddress ip, int port){
         super(ip, port);
         init();
     }

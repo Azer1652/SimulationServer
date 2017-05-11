@@ -12,6 +12,7 @@ import msgs.LaserScan;
 import msgs.ModelStates;
 
 import javax.json.JsonObject;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class RealClient extends Client{
     List<Robot> externalRobots = new ArrayList<Robot>();
     boolean created = false;
 
-    public RealClient(String ip, int port, String robotName){
+    public RealClient(InetAddress ip, int port, String robotName){
         super(ip, port);
         this.robotName = robotName;
         init();
