@@ -10,7 +10,6 @@
     <groupId>edu.arthur.uantwerpen</groupId>
     <artifactId>SimulationServer</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     <dependencies>
         <dependency>
             <groupId>edu.wpi.rail</groupId>
@@ -46,5 +45,4 @@
             <version>2.9.0.pr3</version>
         </dependency>
     </dependencies>
-
 </project>
