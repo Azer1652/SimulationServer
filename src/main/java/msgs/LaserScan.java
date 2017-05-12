@@ -169,5 +169,4 @@ public class LaserScan extends Message{
             return new LaserScan();
         }
     }
-
 }

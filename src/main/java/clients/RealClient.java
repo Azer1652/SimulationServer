@@ -10,6 +10,7 @@ import edu.wpi.rail.jrosbridge.messages.geometry.PoseWithCovarianceStamped;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
 import msgs.LaserScan;
 import msgs.ModelStates;
+import raytrace.RayTracer;
 
 import javax.json.JsonObject;
 import java.net.InetAddress;
@@ -22,7 +23,7 @@ import java.util.List;
 public class RealClient extends Client{
 
     String robotName;
-    List<Robot> externalRobots = new ArrayList<Robot>();
+    public List<Robot> externalRobots = new ArrayList<Robot>();
     boolean created = false;
 
     public RealClient(InetAddress ip, int port, String robotName){
@@ -49,23 +50,7 @@ public class RealClient extends Client{
         });
 
         Topic laserScan = new Topic(ros, "/F1/laser/scan", "sensor_msgs/LaserScan", 100);
-        laserScan.subscribe(new TopicCallback() {
-            //@Override
-            public void handleMessage(Message message) {
-                //Get laserscan
-                LaserScan laserScan = LaserScan.fromMessage(message);
-                //if more than one external robot
-                if(externalRobots.size() > 0){
-
-                }else{
-                    Topic updatedLaserScan = new Topic(ros, "/F1/laser/updatedScan", "sensor_msgs/LaserScan");
-                    updatedLaserScan.publish(laserScan);
-                }
-                //if more than one simulated robot -> raytrace
-
-                //publish changed laserscan
-            }
-        });
+        laserScan.subscribe(new MyTopicCallback(this));
     }
 
     public void updateRobot(Robot robot) {
