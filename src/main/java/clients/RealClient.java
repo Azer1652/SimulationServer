@@ -2,19 +2,15 @@ package clients;
 
 import SimServer.Robot;
 import SimServer.SimServer;
-import com.google.gson.Gson;
 import edu.wpi.rail.jrosbridge.Topic;
 import edu.wpi.rail.jrosbridge.callback.TopicCallback;
 import edu.wpi.rail.jrosbridge.messages.Message;
 import edu.wpi.rail.jrosbridge.messages.geometry.PoseWithCovarianceStamped;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
-import msgs.LaserScan;
-import msgs.ModelStates;
-import raytrace.RayTracer;
 
-import javax.json.JsonObject;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +19,7 @@ import java.util.List;
 public class RealClient extends Client{
 
     String robotName;
-    public List<Robot> externalRobots = new ArrayList<Robot>();
+    public List<Robot> externalRobots = Collections.synchronizedList(new ArrayList<Robot>());
     boolean created = false;
 
     public RealClient(InetAddress ip, int port, String robotName){
@@ -38,30 +34,38 @@ public class RealClient extends Client{
             //@Override
             public void handleMessage(Message message) {
                 PoseWithCovarianceStamped pose = PoseWithCovarianceStamped.fromMessage(message);
-
-                if (!created) {
-                    robots.add(SimServer.robotHandler.newRobot(robotName, pose.getPose().getPose(), new Twist()));
-                    created = true;
-                } else {
-                    //Update robots already tracked
-                    robots.get(0).updateRobot(pose.getPose().getPose());
+                synchronized (robots) {
+                    if (!created) {
+                        robots.add(SimServer.robotHandler.newRobot(robotName, pose.getPose().getPose(), new Twist()));
+                        created = true;
+                    } else {
+                        //Update robots already tracked
+                        robots.get(0).updateRobot(pose.getPose().getPose());
+                    }
                 }
             }
         });
 
         Topic laserScan = new Topic(ros, "/F1/laser/scan", "sensor_msgs/LaserScan", 100);
-        laserScan.subscribe(new MyTopicCallback(this));
+        laserScan.subscribe(new MyLaserCallback(this));
     }
 
     public void updateRobot(Robot robot) {
-
+        //Update robots already tracked
+        synchronized (externalRobots) {
+            externalRobots.get(robots.indexOf(new Robot(robot.model_name))).updateRobot(robot.pose, robot.twist);
+        }
     }
 
     public void deleteRobot(Robot robot) {
-
+        synchronized (externalRobots) {
+            externalRobots.remove(robots.indexOf(new Robot(robot.model_name)));
+        }
     }
 
     public void createRobot(Robot robot) {
-
+        synchronized (externalRobots){
+            externalRobots.add(robot);
+        }
     }
 }

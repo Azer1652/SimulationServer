@@ -6,8 +6,10 @@ import clients.Client;
 import clients.RealClient;
 import clients.SimulatedClient;
 import com.google.gson.Gson;
+import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import edu.wpi.rail.jrosbridge.messages.std.Header;
 import msgs.LaserScan;
+import raytrace.RayTracer;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;

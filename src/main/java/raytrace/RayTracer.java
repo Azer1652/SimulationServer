@@ -6,6 +6,7 @@ import clients.RealClient;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
+import extras.Quat;
 import msgs.LaserScan;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class RayTracer {
     //private final static double angleEndRad = Math.PI-angleStartRad;
     private final static double angleDiffRad = Math.toRadians(270)/(1080);
 
-    public static float[] rayTrace(RealClient client, int length){
+    public static float[] rayTrace(RealClient client, LaserScan laserScan, int length){
         float[] data = new float[length];
 
         //Get robot pose and direction
@@ -29,7 +30,7 @@ public class RayTracer {
         List<Robot> externalRobots = client.externalRobots;
 
         double current = angleStartRad;
-        double currentCarAngleRad = calcCurrentCarAngleYaw(robot.pose.getOrientation());
+        double currentCarAngleRad = Quat.toEulerianAngle(robot.pose.getOrientation())[2];
 
         int i = 0;
         while (i < length) {
@@ -38,12 +39,18 @@ public class RayTracer {
 
             hit = trace(robot.pose.getPosition(), current, currentCarAngleRad, client.externalRobots);
 
-            data[i]=(float) hit.getTime();
+            if(hit != null) {
+                if(hit.getTime() < laserScan.getRanges()[i])
+                    data[i] = (float) hit.getTime();
+            }else{
+                data[i] = laserScan.getRanges()[i];
+            }
             current -= angleDiffRad;
             i++;
         }
 
-        return null;
+        //return modified array
+        return data;
     }
 
     private static Hit trace(Point carLocation, double angle, double currentCarAngleRad, List<Robot> externalRobots){
@@ -67,46 +74,5 @@ public class RayTracer {
             }
         }
         return bestHit;
-    }
-
-    private static double calcCurrentCarAngleYaw(Quaternion q){
-        double euler;
-
-        double ysqr = q.getY() * q.getY();
-
-        // yaw (z-axis rotation)
-        double t3 = +2.0 * (q.getW() * q.getZ() + q.getX() * q.getY());
-        double t4 = +1.0 - 2.0 * (ysqr + q.getZ() * q.getZ());
-        //yaw
-        euler = Math.atan2(t3, t4);
-
-        return euler;
-    }
-
-    private static double[] calcCurrentCarAngle(Quaternion q){
-        double[] euler = new double[3];
-
-        double ysqr = q.getY() * q.getY();
-
-        // roll (x-axis rotation)
-        double t0 = +2.0 * (q.getW() * q.getX() + q.getY() * q.getZ());
-        double t1 = +1.0 - 2.0 * (q.getX() * q.getX() + ysqr);
-        //roll
-        euler[0] = Math.atan2(t0, t1);
-
-        // pitch (y-axis rotation)
-        double t2 = +2.0 * (q.getW() * q.getY() - q.getZ() * q.getX());
-        t2 = t2 > 1.0 ? 1.0 : t2;
-        t2 = t2 < -1.0 ? -1.0 : t2;
-        //pitch
-        euler[1] = Math.asin(t2);
-
-        // yaw (z-axis rotation)
-        double t3 = +2.0 * (q.getW() * q.getZ() + q.getX() * q.getY());
-        double t4 = +1.0 - 2.0 * (ysqr + q.getZ() * q.getZ());
-        //yaw
-        euler[2] = Math.atan2(t3, t4);
-
-        return euler;
     }
 }
