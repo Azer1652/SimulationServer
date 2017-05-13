@@ -22,7 +22,7 @@ public class RealClient extends Client{
     public List<Robot> externalRobots = Collections.synchronizedList(new ArrayList<Robot>());
     boolean created = false;
 
-    public RealClient(InetAddress ip, int port, String robotName){
+    public RealClient(String ip, int port, String robotName){
         super(ip, port);
         this.robotName = robotName;
         init();
@@ -46,7 +46,8 @@ public class RealClient extends Client{
             }
         });
 
-        Topic laserScan = new Topic(ros, "/F1/laser/scan", "sensor_msgs/LaserScan", 100);
+        //TODO update to correct laser topic
+        Topic laserScan = new Topic(ros, "/laser", "sensor_msgs/LaserScan", 100);
         laserScan.subscribe(new MyLaserCallback(this));
     }
 

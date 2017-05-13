@@ -42,10 +42,14 @@ abstract public class Client {
         }
     }
 
-    public Client(InetAddress ip, int port){
-        this.ip = ip;
+    public Client(String ip, int port){
+        try {
+            this.ip = InetAddress.getByName(ip);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         this.port = port;
-        ros = new Ros(ip.getHostAddress(), port);
+        ros = new Ros(ip, port);
     }
 
     public void init(){

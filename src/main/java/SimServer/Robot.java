@@ -2,6 +2,8 @@ package SimServer;
 
 import edu.wpi.rail.jrosbridge.messages.geometry.*;
 
+import java.awt.geom.Rectangle2D;
+
 /**
  * Created by arthur on 06.05.17.
  */
@@ -55,16 +57,7 @@ public class Robot {
         return false;
     }
 
-    public double[] getCorners(){
-        double[] corners = new double[4];
-        //x1
-        corners[0] = pose.getPosition().getX()-0.26;
-        //y1
-        corners[1] = pose.getPosition().getX()-0.1;
-        //x2
-        corners[2] = pose.getPosition().getX()+0.26;
-        //y2
-        corners[3] = pose.getPosition().getX()+0.1;
-        return corners;
+    public Rectangle2D getCorners(){
+        return new Rectangle2D.Double(this.pose.getPosition().getX()-0.125, this.pose.getPosition().getY()-0.25, 0.25, 0.5);
     }
 }

@@ -58,6 +58,9 @@ public class RayTracer {
         double dx = Math.cos(angle+currentCarAngleRad);
         double dy = Math.sin(angle+currentCarAngleRad);
 
+        if(angle < 0.001 && angle > -0.001)
+            System.out.println("break");
+
         //set direction
         Ray ray = new Ray();
         ray.setLocation(carLocation);

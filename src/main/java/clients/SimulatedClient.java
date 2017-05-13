@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class SimulatedClient extends Client{
 
-    public SimulatedClient(InetAddress ip, int port){
+    public SimulatedClient(String ip, int port){
         super(ip, port);
         init();
     }

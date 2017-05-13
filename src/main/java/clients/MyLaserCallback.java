@@ -37,6 +37,10 @@ public class MyLaserCallback implements TopicCallback {
         }
     }
 
+    public void trace(){
+
+    }
+
     private JsonArrayBuilder getJsonArrayBuilder(float[] ranges){
         JsonArrayBuilder jsonRangeBuilder = Json.createArrayBuilder();
         for (float f : ranges){

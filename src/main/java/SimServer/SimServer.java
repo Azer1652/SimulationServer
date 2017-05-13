@@ -2,11 +2,12 @@ package SimServer; /**
  * Created by arthur on 04.05.17.
  */
 
-import clients.Client;
-import clients.RealClient;
-import clients.SimulatedClient;
+import clients.*;
 import com.google.gson.Gson;
+import edu.wpi.rail.jrosbridge.messages.geometry.Point;
+import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
+import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
 import edu.wpi.rail.jrosbridge.messages.std.Header;
 import msgs.LaserScan;
 import raytrace.RayTracer;
@@ -29,6 +30,8 @@ public class SimServer {
         Thread clientAccepter = new Thread(clientReceiver);
         Thread robotUpdater = new Thread(robotHandler);
 
+        testRaytracing();
+
         //TESTING CLIENTS
         //Client client1 = new RealClient("127.0.0.1", 9090, "helloo");
         //Client client1 = new SimulatedClient("127.0.0.1", 9090);
@@ -40,46 +43,15 @@ public class SimServer {
         //Push updates to robots
         robotUpdater.start();
 
-        //GARBAGE
-        /*while (true) {
-            c.createRobot();
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
-
-        /*
-        Ros ros = new Ros("localhost");
-        ros.connect();
-
-        Topic echo = new Topic(ros, "/echo", "std_msgs/String");
-        Message toSend = new Message("{\"data\": \"hello, world!\"}");
-        echo.publish(toSend);
-
-        Topic echoBack = new Topic(ros, "/gazebo/model_states", "gazebo_msgs/ModelStates");
-        echoBack.subscribe(new TopicCallback() {
-            //@Override
-            public void handleMessage(Message message) {
-                Gson gson = new Gson();
-                ModelStates m = gson.fromJson(message.toJsonObject().toString(), ModelStates.class);
-                //System.out.println("From ROS: " + message.toString());
-            }
-        });
-
-        Service deleteModel = new Service(ros, "/gazebo/delete_model", "/gazebo/delete_model");
-
-        ServiceRequest request = new ServiceRequest("{\"model_name\": \"box_0\"}");
-        ServiceResponse response = deleteModel.callServiceAndWait(request);
-        System.out.println(response.toString());
-
-        while (true){
-
-        }
-
         //ros.disconnect();
-        */
+    }
+
+    public void testRaytracing(){
+        RealClient client = new RealClient("127.0.0.1", 9090, "test");
+        client.robots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0), new Quaternion(0,0,0,1)), new Twist()));
+        client.createRobot(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), new Quaternion(0,0,0,1)), new Twist()));
+
+        while (true);
     }
 
     private void init(){

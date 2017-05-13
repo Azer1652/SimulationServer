@@ -3,6 +3,10 @@ package raytrace;
 import SimServer.Robot;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -43,23 +47,30 @@ public class Ray {
     }
 
     public Hit hit(Robot robot){
-        double[] corners = robot.getCorners();
+        Rectangle2D corners = robot.getCorners();
 
-        double t1 = (corners[0] - this.location.getX())*this.inv_direction[0];
-        double t2 = (corners[2] - this.location.getX())*this.inv_direction[0];
+        double x1 = this.location.getX();
+        double y1 = this.location.getY();
+        double x2 = this.location.getX()+this.direction[0]*999999;
+        double y2 = this.location.getY()+this.direction[1]*999999;
 
-        double tmin = min(t1, t2);
-        double tmax = max(t1, t2);
+        double x3 = corners.getX();
+        double y3 = corners.getY();
+        double x4 = corners.getMaxX();
+        double y4 = corners.getMaxY();
 
-        t1 = (corners[1] - this.location.getY())*this.inv_direction[1];
-        t2 = (corners[3] - this.location.getY())*this.inv_direction[1];
-
-        tmin = max(tmin, min(min(t1, t2), tmax));
-        tmax = min(tmax, max(max(t1, t2), tmin));
-
-        if(tmax > max(tmin, 0.0)){
-            return new Hit(new double[]{this.location.getX() + tmin*this.direction[0], this.location.getY() + tmin*this.direction[1]}, tmin);
+        double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+        if (denom == 0.0) { // Lines are parallel.
+            return null;
         }
+        double ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3))/denom;
+        double ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3))/denom;
+        if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
+            // Get the intersection point.
+            double[] intersection = new double[]{(x1 + ua*(x2 - x1)),(y1 + ua*(y2 - y1))};
+            return new Hit(intersection, Point2D.Double.distance(location.getX(), location.getY(), intersection[0], intersection[1]));
+        }
+
         return null;
     }
 }
