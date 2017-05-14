@@ -1,11 +1,8 @@
 package raytrace;
 
 import SimServer.Robot;
-import clients.Client;
 import clients.RealClient;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
-import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
-import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import extras.Quat;
 import msgs.LaserScan;
 
@@ -69,10 +66,12 @@ public class RayTracer {
         //find closest intersection
         Hit bestHit = null;
         for(Robot robot: externalRobots){
-            Hit hit = ray.hit(robot);
-            if(hit != null) {
-                if (bestHit == null || (hit.getTime() > 0 && hit.getTime() < bestHit.getTime())) {
-                    bestHit = hit;
+            for(Segment segment: robot.getSegments()) {
+                Hit hit = ray.hit(segment);
+                if (hit != null) {
+                    if (bestHit == null || (hit.getTime() > 0 && hit.getTime() < bestHit.getTime())) {
+                        bestHit = hit;
+                    }
                 }
             }
         }
