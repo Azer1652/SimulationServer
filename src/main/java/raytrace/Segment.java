@@ -14,8 +14,6 @@ public class Segment {
     public double position[];
     public double direction[];
 
-    public List<Double[]> vertex;
-
     public Segment(double[] start, double[] end){
         this.start = start;
         this.end = end;

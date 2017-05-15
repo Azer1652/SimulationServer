@@ -25,7 +25,7 @@ public class MyLaserCallback implements TopicCallback {
     public void handleMessage(Message message) {
         //Get laserscan
         LaserScan laserScan = LaserScan.fromMessage(message);
-        Topic updatedLaserScan = new Topic(client.ros, "/F1/laser/updatedScan", "sensor_msgs/LaserScan");
+        Topic updatedLaserScan = new Topic(client.ros, "/updatedScan", "sensor_msgs/LaserScan");
         //if more than one external robot
         if(client.externalRobots.size() > 0){
             //Raytrace, modify laserscan

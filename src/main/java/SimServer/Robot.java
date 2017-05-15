@@ -1,6 +1,7 @@
 package SimServer;
 
 import edu.wpi.rail.jrosbridge.messages.geometry.*;
+import extras.Quat;
 import raytrace.Segment;
 import sun.security.provider.certpath.Vertex;
 
@@ -63,21 +64,28 @@ public class Robot {
         double[] corner2 = new double[]{this.pose.getPosition().getX()+0.125, this.pose.getPosition().getY()-0.25, this.pose.getPosition().getZ()};
         double[] corner3 = new double[]{this.pose.getPosition().getX()+0.125, this.pose.getPosition().getY()+0.25, this.pose.getPosition().getZ()};
 
+        double[] newcorner = rotationAround3DEuler(pose.getPosition(), corner, Quat.toEulerianAngle(this.pose.getOrientation()));
+        double[] newcorner1 = rotationAround3DEuler(pose.getPosition(), corner1, Quat.toEulerianAngle(this.pose.getOrientation()));
+        double[] newcorner2 = rotationAround3DEuler(pose.getPosition(), corner2, Quat.toEulerianAngle(this.pose.getOrientation()));
+        double[] newcorner3 = rotationAround3DEuler(pose.getPosition(), corner3, Quat.toEulerianAngle(this.pose.getOrientation()));
+
+        /*
         double[] newcorner = rotation3D(corner, this.pose.getOrientation());
         double[] newcorner1 = rotation3D(corner1, this.pose.getOrientation());
         double[] newcorner2 = rotation3D(corner2, this.pose.getOrientation());
         double[] newcorner3 = rotation3D(corner3, this.pose.getOrientation());
+        */
 
         Segment s = new Segment(new double[]{newcorner[0], newcorner[1]}, new double[]{newcorner1[0], newcorner1[1]});
-        Segment s1 = new Segment(new double[]{newcorner1[0], newcorner1[1]}, new double[]{newcorner2[0], newcorner2[1]});
-        Segment s2 = new Segment(new double[]{newcorner2[0], newcorner2[1]}, new double[]{newcorner3[0], newcorner3[1]});
-        Segment s3 = new Segment(new double[]{newcorner3[0], newcorner3[1]}, new double[]{newcorner[0], newcorner[1]});
+        Segment s1 = new Segment(new double[]{newcorner1[0], newcorner1[1]}, new double[]{newcorner3[0], newcorner3[1]});
+        Segment s2 = new Segment(new double[]{newcorner3[0], newcorner3[1]}, new double[]{newcorner2[0], newcorner2[1]});
+        Segment s3 = new Segment(new double[]{newcorner2[0], newcorner2[1]}, new double[]{newcorner[0], newcorner[1]});
 
         return new Segment[]{s,s1,s2,s3};
     }
 
     private double[] rotation3D(double[] points, Quaternion orientation){
-        double[] newPoints = new double[4];
+        double[] newPoints = new double[3];
 
         double x_old = points[0];
         double y_old = points[1];
@@ -95,6 +103,17 @@ public class Robot {
         newPoints[0] = x_new;
         newPoints[1] = y_new;
         newPoints[2] = z_new;
+
+        return newPoints;
+    }
+
+    private double[] rotationAround3DEuler(Point center, double[] point, double[] angles){
+        double[] newPoints = new double[3];
+
+        newPoints[0] = center.getX() + (point[0]-center.getX())*Math.cos(angles[2]) - (point[1]-center.getY())*Math.sin(angles[2]);
+
+        newPoints[1] = center.getY() + (point[0]-center.getX())*Math.sin(angles[2]) + (point[1]-center.getY())*Math.cos(angles[2]);
+        newPoints[2] = point[2];
 
         return newPoints;
     }

@@ -49,7 +49,7 @@ public class SimServer {
     public void testRaytracing(){
         RealClient client = new RealClient("127.0.0.1", 9090, "test");
         client.robots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0), new Quaternion(0,0,0,1)), new Twist()));
-        client.createRobot(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), new Quaternion(0,0,0,1)), new Twist()));
+        client.createRobot(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), new Quaternion(0,0,-0.367834975507,0.929891085447)), new Twist()));
 
         while (true);
     }

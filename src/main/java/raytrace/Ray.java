@@ -16,14 +16,12 @@ import static java.lang.Math.min;
 public class Ray {
 
     private double direction[];
-    private double inv_direction[];
     private Point location;
     private double angle;
 
     public Ray(){
         this.location = new Point();
         this.direction = new double[]{0,0};
-        this.inv_direction = new double[]{0,0};
     }
 
     public void setLocation(Point location){
@@ -33,17 +31,11 @@ public class Ray {
     public void setDirection(double[] direction){
         this.direction[0] = direction[0];
         this.direction[1] = direction[1];
-        updateInv();
     }
 
     public void setDirection(double x, double y){
         this.direction[0] = x;
         this.direction[1] = y;
-        updateInv();
-    }
-
-    private void updateInv(){
-        this.inv_direction = new double[]{-direction[0],-direction[1]};
     }
 
     public Hit hit(Segment segment){

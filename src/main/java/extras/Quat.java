@@ -48,4 +48,13 @@ public class Quat{
         
         return new double[]{roll, pitch, yaw};
     }
+
+    // return a new Quaternion whose value is (this * b)
+    public static Quaternion times(Quaternion a, Quaternion b) {
+        double y0 = a.getX()*b.getX() - a.getY()*b.getY() - a.getZ()*b.getZ() - a.getW()*b.getW();
+        double y1 = a.getX()*b.getY() + a.getY()*b.getX() + a.getZ()*b.getW() - a.getW()*b.getZ();
+        double y2 = a.getX()*b.getZ() - a.getY()*b.getW() + a.getZ()*b.getX() + a.getW()*b.getY();
+        double y3 = a.getX()*b.getW() + a.getY()*b.getZ() - a.getZ()*b.getY() + a.getW()*b.getX();
+        return new Quaternion(y0, y1, y2, y3);
+    }
 }
