@@ -14,7 +14,7 @@ import java.util.List;
 public class RayTracer {
 
     //This value is supposed to be divided by -pi/4, but it generates an offset if you don't substract 0.1
-    private final static double angleStartRad = +Math.toRadians(135); //-0.28;
+    private final static double angleStartRad = Math.toRadians(135); //-0.28;
     //private final static double angleEndRad = Math.PI-angleStartRad;
     private final static double angleDiffRad = Math.toRadians(270)/(1080);
 

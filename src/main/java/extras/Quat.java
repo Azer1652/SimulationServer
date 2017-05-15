@@ -1,51 +1,51 @@
 package extras;
 
 import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
-
 import static java.lang.Math.*;
 
 /**
  * Created by arthur on 13.05.17.
  */
-public class Quat{
-
-    public static Quaternion toQuaternion(double pitch, double roll, double yaw)
+public class Quat
+{
+    public static Quaternion toQuaternion(double roll, double pitch, double yaw)
     {
-        double t0 = cos(yaw * 0.5);
-        double t1 = sin(yaw * 0.5);
-        double t2 = cos(roll * 0.5);
-        double t3 = sin(roll * 0.5);
-        double t4 = cos(pitch * 0.5);
-        double t5 = sin(pitch * 0.5);
+        double phi = roll / 2.0;
+        double the = pitch / 2.0;
+        double psi = yaw / 2.0;
 
-        return new Quaternion(t0 * t3 * t4 - t1 * t2 * t5,
-                t0 * t2 * t5 + t1 * t3 * t4,
-                t1 * t2 * t4 - t0 * t3 * t5,
-                t0 * t2 * t4 + t1 * t3 * t5
-        );
+        double w = cos(phi) * cos(the) * cos(psi) + sin(phi) * sin(the) * sin(psi);
+        double x = sin(phi) * cos(the) * cos(psi) - cos(phi) * sin(the) * sin(psi);
+        double y = cos(phi) * sin(the) * cos(psi) + sin(phi) * cos(the) * sin(psi);
+        double z = cos(phi) * cos(the) * sin(psi) - sin(phi) * sin(the) * cos(psi);
+
+        double[] norm = Normalize(w,x,y,z);
+
+        return new Quaternion(norm[1],norm[2],norm[3],norm[0]);
     }
     
     public static double[] toEulerianAngle(Quaternion q)
     {
-        double ysqr = q.getY() * q.getY();
-        double roll, pitch, yaw;
+        double[] norm = Normalize(q.getW(),q.getX(),q.getY(),q.getZ());
+        double w = norm[0];
+        double x = norm[1];
+        double y = norm[2];
+        double z = norm[3];
+        double squ = w * w;
+        double sqx = x * x;
+        double sqy = y * y;
+        double sqz = z * z;
 
-        // roll (x-axis rotation)
-        double t0 = +2.0 * (q.getW() * q.getX() + q.getY() * q.getZ());
-        double t1 = +1.0 - 2.0 * (q.getX() * q.getX() + ysqr);
-        roll = atan2(t0, t1);
+        // Roll (x-axis rotation)
+        double roll = atan2(2 * (y*z + w*x), squ - sqx - sqy + sqz);
 
-        // pitch (y-axis rotation)
-        double t2 = +2.0 * (q.getW() * q.getY() - q.getZ() * q.getX());
-        t2 = t2 > 1.0 ? 1.0 : t2;
-        t2 = t2 < -1.0 ? -1.0 : t2;
-        pitch = asin(t2);
+        // Pitch (y-axis rotation)
+        double sarg = -2 * (x*z - w * y);
+        double pitch = sarg <= -1.0 ? -0.5*Math.PI : (sarg >= 1.0 ? 0.5*Math.PI : asin(sarg));
 
-        // yaw (z-axis rotation)
-        double t3 = +2.0 * (q.getW() * q.getZ() + q.getX() * q.getY());
-        double t4 = +1.0 - 2.0 * (ysqr + q.getZ() * q.getZ());
-        yaw = atan2(t3, t4);
-        
+        // Yaw (z-axis rotation)
+        double yaw = atan2(2 * (x*y + w*z), squ + sqx - sqy - sqz);
+
         return new double[]{roll, pitch, yaw};
     }
 
@@ -56,5 +56,32 @@ public class Quat{
         double y2 = a.getX()*b.getZ() - a.getY()*b.getW() + a.getZ()*b.getX() + a.getW()*b.getY();
         double y3 = a.getX()*b.getW() + a.getY()*b.getZ() - a.getZ()*b.getY() + a.getW()*b.getX();
         return new Quaternion(y0, y1, y2, y3);
+    }
+
+    private static double[] Normalize(double w, double x, double y, double z)
+    {
+        double s = sqrt(w * w + x * x + y * y + z * z);
+
+        if (Equal(s, 0.0, 1e-6))
+        {
+            w = 1.0;
+            x = 0.0;
+            y = 0.0;
+            z = 0.0;
+        }
+        else
+        {
+            w /= s;
+            x /= s;
+            y /= s;
+            z /= s;
+        }
+
+        return new double[]{w,x,y,z};
+    }
+
+    private static boolean Equal(double a, double b, double eps)
+    {
+        return Math.abs(a-b) <= eps;
     }
 }
