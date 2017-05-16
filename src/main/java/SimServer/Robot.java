@@ -84,6 +84,7 @@ public class Robot {
         return new Segment[]{s,s1,s2,s3};
     }
 
+    //doesnt work
     private double[] rotation3D(double[] points, Quaternion orientation){
         double[] newPoints = new double[3];
 

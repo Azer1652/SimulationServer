@@ -40,7 +40,7 @@ public class SimulatedClient extends Client{
                 //Iterate all robots
                 for(String name : m.name){
                     //Add robots only robots
-                    if(name.contains("cylinder")){
+                    if(name.contains("F1")){
                         //Add robots not yet tracked
                         synchronized (robots) {
                             if (!robots.contains(new Robot(m.name[i]))) {
@@ -72,7 +72,7 @@ public class SimulatedClient extends Client{
         //ServiceRequest request = new ServiceRequest("{\"model_name\": \"box" +robot.id+ "\"}");
 
         robot.refreshStrings();
-        SpawnModel request = new SpawnModel("box"+robot.id, "<?xml version='1.0'?><sdf version ='1.6'>  <model name ='box"+robot.id+"'>    <pose>"+robot.pose.getPosition().getX()+" "+robot.pose.getPosition().getY()+" "+robot.pose.getPosition().getZ()+" "+robot.pose.getOrientation().getX()+" "+robot.pose.getOrientation().getY()+" "+robot.pose.getOrientation().getZ()+"</pose>    <link name ='link'>      <pose>0 0 .125 0 0 0</pose>      <collision name ='collision'>        <geometry>          <box><size>.33 .2 .09</size></box>        </geometry>      </collision>      <visual name ='visual'>        <geometry>          <box><size>.33 .2 .09</size></box>        </geometry>      </visual>    </link>  </model></sdf>", "", robot.pose, "world");
+        SpawnModel request = new SpawnModel("box"+robot.id, "<?xml version='1.0'?><sdf version ='1.6'>  <model name ='box"+robot.id+"'>    <pose>"+robot.pose.getPosition().getX()+" "+robot.pose.getPosition().getY()+" "+robot.pose.getPosition().getZ()+" "+robot.pose.getOrientation().getX()+" "+robot.pose.getOrientation().getY()+" "+robot.pose.getOrientation().getZ()+"</pose>    <link name ='link'>      <pose>0 0 0.5 0 0 0</pose>      <collision name ='collision'>        <geometry>          <box><size>.535 .2 1</size></box>        </geometry>      </collision>      <visual name ='visual'>        <geometry>          <box><size>.535 .2 1</size></box>        </geometry>      </visual>    </link>  </model></sdf>", "", robot.pose, "world");
         spawnModel.callServiceAndWait(request);
         robot.created = true;
         //ServiceResponse response = spawnModel.callServiceAndWait(request);
