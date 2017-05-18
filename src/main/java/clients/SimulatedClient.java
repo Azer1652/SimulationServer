@@ -28,7 +28,7 @@ public class SimulatedClient extends Client{
     }
 
     //get robots from client
-    public void updateRobots(){
+    public void updateOwnedRobots(){
         Topic echoBack = new Topic(ros, "/gazebo/model_states", "gazebo_msgs/ModelStates", 100);
         echoBack.subscribe(new TopicCallback() {
             //@Override
@@ -42,12 +42,12 @@ public class SimulatedClient extends Client{
                     //Add robots only robots
                     if(name.contains("F1")){
                         //Add robots not yet tracked
-                        synchronized (robots) {
-                            if (!robots.contains(new Robot(m.name[i]))) {
-                                robots.add(SimServer.robotHandler.newRobot(m.name[i], m.pose.get(i), m.twist.get(i)));
+                        synchronized (ownedRobots) {
+                            if (!ownedRobots.contains(new Robot(m.name[i]))) {
+                                ownedRobots.add(SimServer.robotHandler.newRobot(m.name[i], m.pose.get(i), m.twist.get(i)));
                             } else {
                                 //Update robots already tracked
-                                robots.get(robots.indexOf(new Robot(m.name[i]))).updateRobot(m.pose.get(i), m.twist.get(i));
+                                ownedRobots.get(ownedRobots.indexOf(new Robot(m.name[i]))).updateRobot(m.pose.get(i), m.twist.get(i));
                             }
                         }
                     }
@@ -57,8 +57,27 @@ public class SimulatedClient extends Client{
         });
     }
 
+    public void drawExternalRobots() {
+        synchronized (externalRobots) {
+            for (Robot robot : externalRobots) {
+                if (!robot.created) {
+                    createRobot(robot);
+                    robot.created = true;
+                } else {
+                    updateRobot(robot);
+                }
+            }
+        }
+    }
+
+    public void updateExternalRobotPose(Robot robot){
+        synchronized (externalRobots) {
+            externalRobots.get(externalRobots.indexOf(robot)).updateRobot(robot.pose, robot.twist);
+        }
+    }
+
     //works
-    public void createRobot(Robot robot){
+    protected void createRobot(Robot robot){
         Service spawnModel = new Service(ros, "/gazebo/spawn_sdf_model", "/gazebo/spawn_sdf_model");
 
         /*ServiceRequest request = new ServiceRequest("{"
@@ -79,7 +98,7 @@ public class SimulatedClient extends Client{
         //System.out.println(response.toString());
     }
 
-    public void deleteRobot(Robot robot){
+    protected void deleteRobot(Robot robot){
         Service deleteModel = new Service(ros, "/gazebo/delete_model", "/gazebo/delete_model");
 
         ServiceRequest request = new ServiceRequest("{\"model_name\": \"box" +robot.id+ "\"}");
@@ -89,7 +108,7 @@ public class SimulatedClient extends Client{
     }
 
     //works
-    public void updateRobot(Robot robot){
+    protected void updateRobot(Robot robot){
         Topic echo = new Topic(ros, "/gazebo/set_model_state", "gazebo_msgs/ModelState");
         robot.refreshStrings();
         ModelState message = new ModelState("box" + robot.id, robot.pose, robot.twist, "world");

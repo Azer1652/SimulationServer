@@ -14,14 +14,20 @@ public class Robot {
     public String model_name;
     public Pose pose;
     public Twist twist;
+    private RobotHandler robotHandler;
 
     public boolean created = false;
 
-    public Robot(long id, String model_name, Pose pose, Twist twist){
+    public Robot(long id, String model_name, Pose pose, Twist twist, RobotHandler robotHandler){
         this.id=id;
         this.model_name=model_name;
         this.pose=pose;
         this.twist=twist;
+        this.robotHandler = robotHandler;
+    }
+
+    public Robot clone(){
+        return new Robot(id, model_name, pose, twist, null);
     }
 
     public Robot(String str){
@@ -31,6 +37,10 @@ public class Robot {
     public void updateRobot(Pose pose, Twist twist){
         this.pose=pose;
         this.twist=twist;
+    }
+
+    public void setCreated(boolean status){
+        this.created = status;
     }
 
     public void updateRobot(Pose pose){

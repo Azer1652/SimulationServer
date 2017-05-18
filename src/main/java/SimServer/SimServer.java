@@ -30,14 +30,7 @@ public class SimServer {
         //Init Threads
         Thread clientAccepter = new Thread(clientReceiver);
         Thread robotUpdater = new Thread(robotHandler);
-        //testRaytracing();
 
-        //TESTING CLIENTS
-        //Client client1 = new RealClient("127.0.0.1", 9090, "helloo");
-        //Client client1 = new SimulatedClient("127.0.0.1", 9090);
-        //Client client2 = new SimulatedClient("127.0.0.1", 9091);
-
-        //DISABLED FOR TESTING PURPOSES
         //Accept new clients and subscribe to topic for robot updates
         clientAccepter.start();
         //Push updates to robots
@@ -48,8 +41,8 @@ public class SimServer {
 
     public void testRaytracing(){
         RealClient client = new RealClient("192.168.1.2", 9090, "test");
-        client.robots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0),Quat.toQuaternion(0,0,0)), new Twist()));
-        client.createRobot(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
+        client.ownedRobots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0),Quat.toQuaternion(0,0,0)), new Twist()));
+        client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
 
         while (true);
     }

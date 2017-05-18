@@ -23,33 +23,32 @@ public class RayTracer {
         //System.out.print("tracing");
 
         //Get robot pose and direction
-        Robot robot = client.internalRobot.get(0);
+        Robot robot = client.ownedRobots.get(0);
         //get external robots
         List<Robot> externalRobots;
-        synchronized (client.robots)
-        {
-             externalRobots = client.robots;
-        }
+        synchronized (client.externalRobots) {
+            externalRobots = client.externalRobots;
 
-        double current = angleStartRad;
-        double currentCarAngleRad = Quat.toEulerianAngle(robot.pose.getOrientation())[2];
+            double current = angleStartRad;
+            double currentCarAngleRad = Quat.toEulerianAngle(robot.pose.getOrientation())[2];
 
-        int i = 0;
-        while (i < length) {
-            //System.out.print(i);
-            //calculate an intersect for each angle
-            Hit hit;
+            int i = 0;
+            while (i < length) {
+                //System.out.print(i);
+                //calculate an intersect for each angle
+                Hit hit;
 
-            hit = trace(robot.pose.getPosition(), current, currentCarAngleRad, externalRobots);
+                hit = trace(robot.pose.getPosition(), current, currentCarAngleRad, externalRobots);
 
-            if(hit != null) {
-                if(hit.getTime() < laserScan.getRanges()[i])
-                    data[i] = (float) hit.getTime();
-            }else{
-                data[i] = laserScan.getRanges()[i];
+                if (hit != null) {
+                    if (hit.getTime() < laserScan.getRanges()[i])
+                        data[i] = (float) hit.getTime();
+                } else {
+                    data[i] = laserScan.getRanges()[i];
+                }
+                current -= angleDiffRad;
+                i++;
             }
-            current -= angleDiffRad;
-            i++;
         }
 
         //return modified array

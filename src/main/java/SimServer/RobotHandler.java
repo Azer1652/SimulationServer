@@ -26,33 +26,29 @@ public class RobotHandler implements Runnable{
 
     public Robot newRobot(String model_name, Pose pose, Twist twist){
         robotCounter++;
-        return new Robot(robotCounter, model_name, pose, twist);
+        return new Robot(robotCounter, model_name, pose, twist, this);
     }
 
     public void run() {
         while (!shutdown) {
-            //For every client check the robots and update other clients
+            //Make sure every robot is up to date on every client
             for (Client client1 : clients) {
-                synchronized (client1.robots) {
-                    for (Robot robot : client1.robots) {
-                        if (!robot.created) {
-                            for (Client client2 : clients) {
-                                if (!(client1.equals(client2))) {
-                                    client2.createRobot(robot);
-                                }
+                synchronized (client1.ownedRobots) {
+                    for (Robot robot : client1.ownedRobots) {
+                        for (Client client2 : clients) {
+                            if (!(client1.equals(client2))) {
+                                client2.addAndUpdateExternalRobot(robot);
                             }
-                            robot.created = true;
-                        } else {
-                            for (Client client2 : clients) {
-                                if (!(client1.equals(client2))) {
-                                    client2.updateRobot(robot);
-                                }
-                            }
-
                         }
                     }
                 }
             }
+
+            //draw all robots (Only works on simulated clients)
+            for(Client client: clients){
+                client.drawExternalRobots();
+            }
+
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {

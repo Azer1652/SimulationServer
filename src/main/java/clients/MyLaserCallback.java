@@ -28,20 +28,26 @@ public class MyLaserCallback implements TopicCallback {
         //Get laserscan
         LaserScan laserScan = LaserScan.fromMessage(message);
         Topic updatedLaserScan = new Topic(client.ros, "/updatedScan", "sensor_msgs/LaserScan");
+        edu.wpi.rail.jrosbridge.primitives.Time time;
+        Header h;
         //if more than one external robot
-        if(client.robots.size() > 0){
-            //Raytrace, modify laserscan
-            float[] updatedRanges = RayTracer.rayTrace(client, laserScan, laserScan.getRanges().length);
-            //publish updated laserscan
-            edu.wpi.rail.jrosbridge.primitives.Time time = edu.wpi.rail.jrosbridge.primitives.Time.now();
-            Header h = new Header(laserScan.getHeader().getSeq(),time, new String("laser_2"));
+        synchronized (client.externalRobots) {
+            if (client.externalRobots.size() > 0) {
+                //Raytrace, modify laserscan
+                float[] updatedRanges = RayTracer.rayTrace(client, laserScan, laserScan.getRanges().length);
+                time = edu.wpi.rail.jrosbridge.primitives.Time.now();
+                h = new Header(laserScan.getHeader().getSeq(), time, new String("laser_2"));
 
-            updatedLaserScan.publish(new LaserScan(h, laserScan.getAngle_min(), laserScan.getAngle_max(), laserScan.getAngle_increment(), laserScan.getTime_increment(), laserScan.getScan_time(), laserScan.getRange_min(), laserScan.getRange_max(), updatedRanges, getJsonArrayBuilder(updatedRanges), laserScan.getIntensities(), getJsonArrayBuilder(laserScan.getIntensities())));
-        }else{
-            edu.wpi.rail.jrosbridge.primitives.Time time = edu.wpi.rail.jrosbridge.primitives.Time.now();
-            Header h = new Header(laserScan.getHeader().getSeq(),time, new String("laser_2"));
-            updatedLaserScan.publish(new LaserScan(h, laserScan.getAngle_min(), laserScan.getAngle_max(), laserScan.getAngle_increment(), laserScan.getTime_increment(), laserScan.getScan_time(), laserScan.getRange_min(), laserScan.getRange_max(), laserScan.getRanges(), getJsonArrayBuilder(laserScan.getRanges()), laserScan.getIntensities(), getJsonArrayBuilder(laserScan.getIntensities())));
+                //publish updated laserscan
+                updatedLaserScan.publish(new LaserScan(h, laserScan.getAngle_min(), laserScan.getAngle_max(), laserScan.getAngle_increment(), laserScan.getTime_increment(), laserScan.getScan_time(), laserScan.getRange_min(), laserScan.getRange_max(), updatedRanges, getJsonArrayBuilder(updatedRanges), laserScan.getIntensities(), getJsonArrayBuilder(laserScan.getIntensities())));
+            } else {
+                time = edu.wpi.rail.jrosbridge.primitives.Time.now();
+                h = new Header(laserScan.getHeader().getSeq(), time, new String("laser_2"));
 
+                //publish unmodified laserscan
+                updatedLaserScan.publish(new LaserScan(h, laserScan.getAngle_min(), laserScan.getAngle_max(), laserScan.getAngle_increment(), laserScan.getTime_increment(), laserScan.getScan_time(), laserScan.getRange_min(), laserScan.getRange_max(), laserScan.getRanges(), getJsonArrayBuilder(laserScan.getRanges()), laserScan.getIntensities(), getJsonArrayBuilder(laserScan.getIntensities())));
+
+            }
         }
     }
 

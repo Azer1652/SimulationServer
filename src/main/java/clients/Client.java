@@ -28,7 +28,8 @@ abstract public class Client {
     protected int port; // Port on which the client has connected
     protected Ros ros;
 
-    public List<Robot> robots = Collections.synchronizedList(new ArrayList<Robot>());
+    public List<Robot> ownedRobots = Collections.synchronizedList(new ArrayList<Robot>());
+    public List<Robot> externalRobots = Collections.synchronizedList(new ArrayList<Robot>());
 
     public Client(String ip){
         try {
@@ -59,7 +60,7 @@ abstract public class Client {
         SimServer.robotHandler.addClient(this);
 
         //Get Robots
-        updateRobots();
+        updateOwnedRobots();
     }
 
     public void closeRos(){
@@ -67,13 +68,17 @@ abstract public class Client {
     }
 
     //get robots from client
-    abstract public void updateRobots();
+    abstract public void updateOwnedRobots();
 
-    //works
-    abstract public void createRobot(Robot robot);
+    public void addAndUpdateExternalRobot(Robot robot){
+        synchronized (externalRobots){
+            if(!externalRobots.contains(robot)){
+                externalRobots.add(robot.clone());
+            }else{
+                externalRobots.get(externalRobots.indexOf(robot)).updateRobot(robot.pose, robot.twist);
+            }
+        }
+    }
 
-    abstract public void deleteRobot(Robot robot);
-
-    //works
-    abstract public void updateRobot(Robot robot);
+    abstract public void drawExternalRobots();
 }
