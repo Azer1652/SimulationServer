@@ -56,11 +56,13 @@ public class ClientReceiver implements Runnable{
 
                     if(real)
                     {
-                        simServer.addClient(new RealClient(IP.getHostAddress(),ros_port, "F1"));
+                        new RealClient(IP.getHostAddress(),ros_port, "Real");
+                        //simServer.addClient(new RealClient(IP.getHostAddress(),ros_port, "F1"));
                     }
                     else
                     {
-                        simServer.addClient(new SimulatedClient(IP.getHostAddress(),ros_port));
+                        new SimulatedClient(IP.getHostAddress(),ros_port);
+                        //simServer.addClient(new SimulatedClient(IP.getHostAddress(),ros_port));
                     }
 
                     server.close();

@@ -74,7 +74,7 @@ public class SimulatedClient extends Client{
         robot.refreshStrings();
         SpawnModel request = new SpawnModel("box"+robot.id, "<?xml version='1.0'?><sdf version ='1.6'>  <model name ='box"+robot.id+"'>    <pose>"+robot.pose.getPosition().getX()+" "+robot.pose.getPosition().getY()+" "+robot.pose.getPosition().getZ()+" "+robot.pose.getOrientation().getX()+" "+robot.pose.getOrientation().getY()+" "+robot.pose.getOrientation().getZ()+"</pose>    <link name ='link'>      <pose>0 0 0.5 0 0 0</pose>      <collision name ='collision'>        <geometry>          <box><size>.535 .2 1</size></box>        </geometry>      </collision>      <visual name ='visual'>        <geometry>          <box><size>.535 .2 1</size></box>        </geometry>      </visual>    </link>  </model></sdf>", "", robot.pose, "world");
         spawnModel.callServiceAndWait(request);
-        robot.created = true;
+        //robot.created = true;
         //ServiceResponse response = spawnModel.callServiceAndWait(request);
         //System.out.println(response.toString());
     }

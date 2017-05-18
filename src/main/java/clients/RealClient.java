@@ -19,7 +19,7 @@ import java.util.List;
 public class RealClient extends Client{
 
     String robotName;
-    public List<Robot> externalRobots = Collections.synchronizedList(new ArrayList<Robot>());
+    public List<Robot> internalRobot = Collections.synchronizedList(new ArrayList<Robot>());
     boolean created = false;
 
     public RealClient(String ip, int port, String robotName){
@@ -34,40 +34,43 @@ public class RealClient extends Client{
             //@Override
             public void handleMessage(Message message) {
                 PoseWithCovarianceStamped pose = PoseWithCovarianceStamped.fromMessage(message);
-                synchronized (robots) {
+                synchronized (internalRobot) {
                     if (!created) {
-                        robots.add(SimServer.robotHandler.newRobot(robotName, pose.getPose().getPose(), new Twist()));
+                        internalRobot.add(SimServer.robotHandler.newRobot(robotName, pose.getPose().getPose(), new Twist()));
                         created = true;
                     } else {
                         //Update robots already tracked
-                        robots.get(0).updateRobot(pose.getPose().getPose());
+                        internalRobot.get(0).updateRobot(pose.getPose().getPose());
                     }
                 }
             }
         });
 
         //TODO update to scan topic
-        Topic laserScan = new Topic(ros, "/scan", "sensor_msgs/LaserScan", 4);
+        Topic laserScan = new Topic(ros, "/scan", "sensor_msgs/LaserScan");
         //Topic laserScan = new Topic(ros, "/laser", "sensor_msgs/LaserScan", 100);
         laserScan.subscribe(new MyLaserCallback(this));
     }
 
     public void updateRobot(Robot robot) {
         //Update robots already tracked
-        synchronized (externalRobots) {
-            externalRobots.get(robots.indexOf(new Robot(robot.model_name))).updateRobot(robot.pose, robot.twist);
+        synchronized (robots) {
+            //System.out.print("Updating");
+            if(robots.indexOf(new Robot(robot.model_name)) != -1)
+                robots.get(robots.indexOf(new Robot(robot.model_name))).updateRobot(robot.pose, robot.twist);
         }
     }
 
     public void deleteRobot(Robot robot) {
-        synchronized (externalRobots) {
-            externalRobots.remove(robots.indexOf(new Robot(robot.model_name)));
+        synchronized (robots) {
+            robots.remove(robots.indexOf(new Robot(robot.model_name)));
         }
     }
 
     public void createRobot(Robot robot) {
-        synchronized (externalRobots){
-            externalRobots.add(robot);
+        synchronized (robots){
+            //System.out.print("creating");
+            robots.add(robot);
         }
     }
 }

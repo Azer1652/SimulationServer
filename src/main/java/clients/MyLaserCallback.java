@@ -29,7 +29,7 @@ public class MyLaserCallback implements TopicCallback {
         LaserScan laserScan = LaserScan.fromMessage(message);
         Topic updatedLaserScan = new Topic(client.ros, "/updatedScan", "sensor_msgs/LaserScan");
         //if more than one external robot
-        if(client.externalRobots.size() > 0){
+        if(client.robots.size() > 0){
             //Raytrace, modify laserscan
             float[] updatedRanges = RayTracer.rayTrace(client, laserScan, laserScan.getRanges().length);
             //publish updated laserscan
@@ -43,10 +43,6 @@ public class MyLaserCallback implements TopicCallback {
             updatedLaserScan.publish(new LaserScan(h, laserScan.getAngle_min(), laserScan.getAngle_max(), laserScan.getAngle_increment(), laserScan.getTime_increment(), laserScan.getScan_time(), laserScan.getRange_min(), laserScan.getRange_max(), laserScan.getRanges(), getJsonArrayBuilder(laserScan.getRanges()), laserScan.getIntensities(), getJsonArrayBuilder(laserScan.getIntensities())));
 
         }
-    }
-
-    public void trace(){
-
     }
 
     private JsonArrayBuilder getJsonArrayBuilder(float[] ranges){

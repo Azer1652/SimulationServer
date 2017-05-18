@@ -20,21 +20,27 @@ public class RayTracer {
 
     public static float[] rayTrace(RealClient client, LaserScan laserScan, int length){
         float[] data = new float[length];
+        //System.out.print("tracing");
 
         //Get robot pose and direction
-        Robot robot = client.robots.get(0);
+        Robot robot = client.internalRobot.get(0);
         //get external robots
-        List<Robot> externalRobots = client.externalRobots;
+        List<Robot> externalRobots;
+        synchronized (client.robots)
+        {
+             externalRobots = client.robots;
+        }
 
         double current = angleStartRad;
         double currentCarAngleRad = Quat.toEulerianAngle(robot.pose.getOrientation())[2];
 
         int i = 0;
         while (i < length) {
+            //System.out.print(i);
             //calculate an intersect for each angle
             Hit hit;
 
-            hit = trace(robot.pose.getPosition(), current, currentCarAngleRad, client.externalRobots);
+            hit = trace(robot.pose.getPosition(), current, currentCarAngleRad, externalRobots);
 
             if(hit != null) {
                 if(hit.getTime() < laserScan.getRanges()[i])
@@ -52,12 +58,13 @@ public class RayTracer {
 
     private static Hit trace(Point carLocation, double angle, double currentCarAngleRad, List<Robot> externalRobots){
         //todo remove cos and sin by something simpler
+        //System.out.print("Ray");
         double dx = Math.cos(angle+currentCarAngleRad);
         double dy = Math.sin(angle+currentCarAngleRad);
 
-        if(angle < 0.001 && angle > -0.001)
+        /*if(angle < 0.001 && angle > -0.001)
             System.out.println("break");
-
+*/
         //set direction
         Ray ray = new Ray();
         ray.setLocation(carLocation);

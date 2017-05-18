@@ -41,12 +41,14 @@ public class RobotHandler implements Runnable{
                                     client2.createRobot(robot);
                                 }
                             }
+                            robot.created = true;
                         } else {
                             for (Client client2 : clients) {
                                 if (!(client1.equals(client2))) {
                                     client2.updateRobot(robot);
                                 }
                             }
+
                         }
                     }
                 }
