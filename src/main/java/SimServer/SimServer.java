@@ -30,9 +30,6 @@ public class SimServer {
         //Init Threads
         Thread clientAccepter = new Thread(clientReceiver);
         Thread robotUpdater = new Thread(robotHandler);
-
-        test();
-
         //testRaytracing();
 
         //TESTING CLIENTS
@@ -49,18 +46,10 @@ public class SimServer {
         //ros.disconnect();
     }
 
-    public void test(){
-        System.out.println("First connecting");
-        new SimulatedClient("146.175.140.39", 9090);
-        System.out.println("Second connecting");
-        new SimulatedClient("127.0.0.1", 9090);
-    }
-
     public void testRaytracing(){
-        RealClient client = new RealClient("127.0.0.1", 9090, "test");
-        client.robots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0), new Quaternion(0,0,0,1)), new Twist()));
-        //client.createRobot(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), new Quaternion(0,0,-0.367834975507,0.929891085447)), new Twist()));
-        client.createRobot(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,0)), new Twist()));
+        RealClient client = new RealClient("192.168.1.2", 9090, "test");
+        client.robots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0),Quat.toQuaternion(0,0,0)), new Twist()));
+        client.createRobot(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
 
         while (true);
     }

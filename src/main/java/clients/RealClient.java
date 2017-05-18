@@ -29,7 +29,7 @@ public class RealClient extends Client{
     }
 
     public void updateRobots() {
-        Topic echoBack = new Topic(ros, "/amcl_pose", "geometry_msgs/PoseWithCovarianceStamped", 100);
+        Topic echoBack = new Topic(ros, "/amcl_pose", "geometry_msgs/PoseWithCovarianceStamped");
         echoBack.subscribe(new TopicCallback() {
             //@Override
             public void handleMessage(Message message) {
@@ -47,8 +47,8 @@ public class RealClient extends Client{
         });
 
         //TODO update to scan topic
-        //Topic laserScan = new Topic(ros, "/scan", "sensor_msgs/LaserScan", 100);
-        Topic laserScan = new Topic(ros, "/laser", "sensor_msgs/LaserScan", 100);
+        Topic laserScan = new Topic(ros, "/scan", "sensor_msgs/LaserScan", 4);
+        //Topic laserScan = new Topic(ros, "/laser", "sensor_msgs/LaserScan", 100);
         laserScan.subscribe(new MyLaserCallback(this));
     }
 

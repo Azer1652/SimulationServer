@@ -3,6 +3,8 @@ package clients;
 import edu.wpi.rail.jrosbridge.Topic;
 import edu.wpi.rail.jrosbridge.callback.TopicCallback;
 import edu.wpi.rail.jrosbridge.messages.Message;
+import edu.wpi.rail.jrosbridge.messages.std.Header;
+import edu.wpi.rail.jrosbridge.messages.std.Time;
 import msgs.LaserScan;
 import raytrace.RayTracer;
 
@@ -31,9 +33,15 @@ public class MyLaserCallback implements TopicCallback {
             //Raytrace, modify laserscan
             float[] updatedRanges = RayTracer.rayTrace(client, laserScan, laserScan.getRanges().length);
             //publish updated laserscan
-            updatedLaserScan.publish(new LaserScan(laserScan.getHeader(), laserScan.getAngle_min(), laserScan.getAngle_max(), laserScan.getAngle_increment(), laserScan.getTime_increment(), laserScan.getScan_time(), laserScan.getRange_min(), laserScan.getRange_max(), updatedRanges, getJsonArrayBuilder(updatedRanges), laserScan.getIntensities(), getJsonArrayBuilder(laserScan.getIntensities())));
+            edu.wpi.rail.jrosbridge.primitives.Time time = edu.wpi.rail.jrosbridge.primitives.Time.now();
+            Header h = new Header(laserScan.getHeader().getSeq(),time, new String("laser_2"));
+
+            updatedLaserScan.publish(new LaserScan(h, laserScan.getAngle_min(), laserScan.getAngle_max(), laserScan.getAngle_increment(), laserScan.getTime_increment(), laserScan.getScan_time(), laserScan.getRange_min(), laserScan.getRange_max(), updatedRanges, getJsonArrayBuilder(updatedRanges), laserScan.getIntensities(), getJsonArrayBuilder(laserScan.getIntensities())));
         }else{
-            updatedLaserScan.publish(laserScan);
+            edu.wpi.rail.jrosbridge.primitives.Time time = edu.wpi.rail.jrosbridge.primitives.Time.now();
+            Header h = new Header(laserScan.getHeader().getSeq(),time, new String("laser_2"));
+            updatedLaserScan.publish(new LaserScan(h, laserScan.getAngle_min(), laserScan.getAngle_max(), laserScan.getAngle_increment(), laserScan.getTime_increment(), laserScan.getScan_time(), laserScan.getRange_min(), laserScan.getRange_max(), laserScan.getRanges(), getJsonArrayBuilder(laserScan.getRanges()), laserScan.getIntensities(), getJsonArrayBuilder(laserScan.getIntensities())));
+
         }
     }
 

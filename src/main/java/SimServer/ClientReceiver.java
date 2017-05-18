@@ -45,7 +45,7 @@ public class ClientReceiver implements Runnable{
                 try {
                     Socket server = serverSocket.accept();
                     BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
-                    InetAddress IP = server.getLocalAddress();
+                    InetAddress IP = server.getInetAddress();
                     int ros_port = Integer.parseInt(in.readLine());
                     Boolean real = Boolean.parseBoolean(in.readLine());
 
@@ -56,11 +56,11 @@ public class ClientReceiver implements Runnable{
 
                     if(real)
                     {
-                        //simServer.addClient(new RealClient(IP,ros_port, "F1"));
+                        simServer.addClient(new RealClient(IP.getHostAddress(),ros_port, "F1"));
                     }
                     else
                     {
-                        //simServer.addClient(new SimulatedClient(IP,ros_port));
+                        simServer.addClient(new SimulatedClient(IP.getHostAddress(),ros_port));
                     }
 
                     server.close();
