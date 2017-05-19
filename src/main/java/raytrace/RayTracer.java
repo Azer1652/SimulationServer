@@ -121,4 +121,10 @@ public class RayTracer{
         }
         return bestHit;
     }
-}
+
+    private static int mappingAngle(double angle)
+    {
+        angle += 3/4*Math.PI;
+        angle = angle*180/Math.PI;
+        return (int) Math.ceil(angle*4);
+    }}
