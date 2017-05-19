@@ -6,48 +6,86 @@ import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import extras.Quat;
 import msgs.LaserScan;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by arthur on 12.05.17.
  */
-public class RayTracer {
+public class RayTracer{
 
     //This value is supposed to be divided by -pi/4, but it generates an offset if you don't substract 0.1
-    private final static double angleStartRad = Math.toRadians(135); //-0.28;
+    private final static double angleStartRad = Math.toRadians(-135); //-0.28;
     //private final static double angleEndRad = Math.PI-angleStartRad;
     private final static double angleDiffRad = Math.toRadians(270)/(1080);
 
     public static float[] rayTrace(RealClient client, LaserScan laserScan, int length){
         float[] data = new float[length];
         //System.out.print("tracing");
+        int cores = Runtime.getRuntime().availableProcessors();
+        ArrayList<RayTraceThread> rayTraceThreads = new ArrayList<>();
+        ArrayList<Thread> threads = new ArrayList<>();
+        ArrayList<Hit> hits = new ArrayList<>();
+
 
         //Get robot pose and direction
-        Robot robot = client.ownedRobots.get(0);
-        //get external robots
-        List<Robot> externalRobots;
-        synchronized (client.externalRobots) {
-            externalRobots = client.externalRobots;
+        if(client.ownedRobots.size() != 0)
+        {
+            Robot robot = client.ownedRobots.get(0);
+            //get external robots
+            List<Robot> externalRobots;
+            synchronized (client.externalRobots)
+            {
+                externalRobots = client.externalRobots;
 
-            double current = angleStartRad;
-            double currentCarAngleRad = Quat.toEulerianAngle(robot.pose.getOrientation())[2];
+                double current = angleStartRad;
+                double currentCarAngleRad = Quat.toEulerianAngle(robot.pose.getOrientation())[2];
 
-            int i = 0;
-            while (i < length) {
-                //System.out.print(i);
-                //calculate an intersect for each angle
-                Hit hit;
+                int i = 0;
+                while (i < length)
+                {
+                    /*if(i == 1080){
+                        System.out.print(i);
+                    }*/
 
-                hit = trace(robot.pose.getPosition(), current, currentCarAngleRad, externalRobots);
+                    //System.out.print(i);
+                    //calculate an intersect for each angle
 
-                if (hit != null) {
-                    if (hit.getTime() < laserScan.getRanges()[i])
-                        data[i] = (float) hit.getTime();
-                } else {
-                    data[i] = laserScan.getRanges()[i];
+                    for(int m = 0; m<cores; m++){
+                        rayTraceThreads.add(new RayTraceThread(robot.pose.getPosition(), current, currentCarAngleRad+angleDiffRad*m, externalRobots));
+                        threads.add(new Thread(rayTraceThreads.get(m)));
+                        threads.get(m).start();
+                    }
+
+                    try
+                    {
+                        for(int j = 0; j< cores; j++){
+                            threads.get(j).join();
+                            hits.add(rayTraceThreads.get(j).hit);
+                        }
+
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    for(int k = 0; k<cores; k++){
+                        Hit hit = rayTraceThreads.get(k).hit;
+                        if (hit != null)
+                        {
+                            if (hit.getTime() < laserScan.getRanges()[i+k])
+                                data[i+k] = (float) hit.getTime();
+                        }
+                        else
+                        {
+                            if(i+k+1 <= length)
+                                data[i+k] = laserScan.getRanges()[i+k];
+                        }
+                    }
+
+                    current += angleDiffRad*cores;
+                    i += cores;
                 }
-                current -= angleDiffRad;
-                i++;
             }
         }
 

@@ -13,11 +13,14 @@ import static java.lang.Math.min;
 /**
  * Created by arthur on 12.05.17.
  */
-public class Ray {
+public class Ray
+{
 
     private double direction[];
     private Point location;
     private double angle;
+    public Segment segment;
+    public Hit hit;
 
     public Ray(){
         this.location = new Point();
