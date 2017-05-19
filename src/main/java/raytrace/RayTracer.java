@@ -122,9 +122,13 @@ public class RayTracer{
         return bestHit;
     }
 
+    // Conversion Angles to X-th ray
     private static int mappingAngle(double angle)
     {
         angle += 3/4*Math.PI;
         angle = angle*180/Math.PI;
-        return (int) Math.ceil(angle*4);
-    }}
+        return (int) Math.ceil(angle * 4);
+    }
+}
+
+

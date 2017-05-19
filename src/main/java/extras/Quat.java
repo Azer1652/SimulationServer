@@ -6,6 +6,8 @@ import static java.lang.Math.*;
 /**
  * Created by arthur on 13.05.17.
  */
+
+// Conversion functions from Gazebo API source code
 public class Quat
 {
     public static Quaternion toQuaternion(double roll, double pitch, double yaw)
