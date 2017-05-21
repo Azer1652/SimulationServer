@@ -51,12 +51,20 @@ public class RayTracer{
                     segments.add(r.getSegments());
                 }
 
+                //Generate Threads
+                for(int m = 0; m<cores; m++)
+                {
+                    rayTraceThreads.add(new RayTraceThread(new Point3D(position[0],position[1],position[2]), current, currentCarAngleRad+angleDiffRad*m, segments));
+                    threads.add(new Thread(rayTraceThreads.get(m)));
+                    threads.get(m).start();
+                }
+
                 while (i < length) // length = amount of rays (1080)
                 {
                     for(int m = 0; m<cores; m++)
                     {
-                        rayTraceThreads.add(new RayTraceThread(new Point3D(position[0],position[1],position[2]), current, currentCarAngleRad+angleDiffRad*m, segments));
-                        threads.add(new Thread(rayTraceThreads.get(m)));
+                        rayTraceThreads.set(m, new RayTraceThread(new Point3D(position[0],position[1],position[2]), current, currentCarAngleRad+angleDiffRad*m, segments));
+                        threads.set(m, new Thread(rayTraceThreads.get(m)));
                         threads.get(m).start();
                     }
 
