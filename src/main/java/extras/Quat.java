@@ -4,9 +4,10 @@ import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import static java.lang.Math.*;
 
 /**
- * Created by arthur on 13.05.17.
- */
-
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 // Conversion functions from Gazebo API source code
 public class Quat
 {

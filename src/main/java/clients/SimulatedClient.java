@@ -12,14 +12,11 @@ import msgs.ModelState;
 import msgs.ModelStates;
 import msgs.SpawnModel;
 
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
- * Created by arthur on 10.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class SimulatedClient extends Client{
 
     public SimulatedClient(String ip, int port){

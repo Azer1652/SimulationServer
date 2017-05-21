@@ -1,11 +1,10 @@
 package raytrace;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Created by arthur on 14.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class Segment {
 
     public double start[];

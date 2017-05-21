@@ -1,33 +1,27 @@
 package raytrace;
 
-import SimServer.Robot;
-import edu.wpi.rail.jrosbridge.messages.geometry.Point;
-
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import javafx.geometry.Point3D;
 
 /**
- * Created by arthur on 12.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class Ray
 {
 
     private double direction[];
-    private Point location;
+    private Point3D location;
     private double angle;
     public Segment segment;
     public Hit hit;
 
     public Ray(){
-        this.location = new Point();
+        this.location = new Point3D(0,0,0);
         this.direction = new double[]{0,0};
     }
 
-    public void setLocation(Point location){
+    public void setLocation(Point3D location){
         this.location = location;
     }
 

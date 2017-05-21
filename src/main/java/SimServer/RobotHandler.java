@@ -3,13 +3,14 @@ package SimServer;
 import clients.Client;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by arthur on 06.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class RobotHandler implements Runnable{
     private long robotCounter = 0;
     public boolean shutdown = false;

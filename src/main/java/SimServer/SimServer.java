@@ -1,21 +1,16 @@
-package SimServer; /**
- * Created by arthur on 04.05.17.
- */
+package SimServer;
 
 import clients.*;
-import com.google.gson.Gson;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
-import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
-import edu.wpi.rail.jrosbridge.messages.std.Header;
 import extras.Quat;
-import msgs.LaserScan;
-import raytrace.RayTracer;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
-
+/**
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class SimServer {
 
     public static boolean debug = true;

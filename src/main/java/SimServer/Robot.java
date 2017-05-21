@@ -3,11 +3,12 @@ package SimServer;
 import edu.wpi.rail.jrosbridge.messages.geometry.*;
 import extras.Quat;
 import raytrace.Segment;
-import sun.security.provider.certpath.Vertex;
 
 /**
- * Created by arthur on 06.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class Robot {
 
     public long id;

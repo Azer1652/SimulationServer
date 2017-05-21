@@ -1,22 +1,17 @@
 package clients;
 
-import SimServer.Robot;
 import SimServer.SimServer;
 import edu.wpi.rail.jrosbridge.Topic;
 import edu.wpi.rail.jrosbridge.callback.TopicCallback;
 import edu.wpi.rail.jrosbridge.messages.Message;
-import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.PoseWithCovarianceStamped;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
 
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
- * Created by arthur on 10.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class RealClient extends Client{
 
     String robotName;

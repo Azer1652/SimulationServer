@@ -1,15 +1,14 @@
 package msgs;
 
-import com.google.gson.Gson;
 import edu.wpi.rail.jrosbridge.messages.Message;
-import edu.wpi.rail.jrosbridge.messages.std.Float32;
 import edu.wpi.rail.jrosbridge.messages.std.Header;
-
 import javax.json.*;
 
 /**
- * Created by arthur on 10.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class LaserScan extends Message{
 
     public static final String HEADER = "header";

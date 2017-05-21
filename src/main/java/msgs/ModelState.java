@@ -3,14 +3,13 @@ package msgs;
 import edu.wpi.rail.jrosbridge.messages.Message;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
-
-import edu.wpi.rail.jrosbridge.messages.Message;
 import javax.json.Json;
-import javax.json.JsonObject;
 
 /**
- * Created by arthur on 05.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class ModelState extends Message {
     public static final String FIELD_MODEL_NAME = "model_name";
     public static final String FIELD_POSE = "pose";

@@ -1,9 +1,7 @@
 package SimServer;
 
-import clients.Client;
 import clients.RealClient;
 import clients.SimulatedClient;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,8 +10,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * Created by arthur on 06.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class ClientReceiver implements Runnable{
 
     private int port = 6666;

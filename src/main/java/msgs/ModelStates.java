@@ -1,16 +1,15 @@
 package msgs;
 
-import edu.wpi.rail.jrosbridge.messages.Message;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
-
-import javax.json.Json;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by arthur on 04.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class ModelStates{
 
     public String[] name;

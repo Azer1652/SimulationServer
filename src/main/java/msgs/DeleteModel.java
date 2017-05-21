@@ -1,8 +1,10 @@
 package msgs;
 
 /**
- * Created by arthur on 05.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class DeleteModel {
     //Send
     public String model_name;

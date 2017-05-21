@@ -1,39 +1,35 @@
 package raytrace;
 
-import SimServer.Robot;
-import edu.wpi.rail.jrosbridge.messages.geometry.Point;
-
-import java.util.List;
+import javafx.geometry.Point3D;
+import java.util.ArrayList;
 
 /**
- * SimulationServer created by Jan De Laet on 19/05/2017.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class RayTraceThread implements Runnable
 {
-    Point carLocation;
+    Point3D carLocation;
     double angle;
     double currentCarAngleRad;
-    List<Robot> externalRobots;
     Hit hit = null;
+    ArrayList<Segment[]> segments;
 
-    public RayTraceThread(Point carLocation, double angle, double currentCarAngleRad, List<Robot> externalRobots){
+    public RayTraceThread(Point3D carLocation, double angle, double currentCarAngleRad, ArrayList<Segment[]> segments){
         this.carLocation = carLocation;
         this.angle = angle;
         this.currentCarAngleRad = currentCarAngleRad;
-        this.externalRobots = externalRobots;
+        this.segments = segments;
     }
 
     @Override
     public void run()
     {
         //todo remove cos and sin by something simpler
-        //System.out.print("Ray");
         double dx = Math.cos(angle+currentCarAngleRad);
         double dy = Math.sin(angle+currentCarAngleRad);
 
-        /*if(angle < 0.001 && angle > -0.001)
-            System.out.println("break");
-*/
         //set direction
         Ray ray = new Ray();
         ray.setLocation(carLocation);
@@ -41,11 +37,15 @@ public class RayTraceThread implements Runnable
 
         //find closest intersection
         Hit bestHit = null;
-        for(Robot robot: externalRobots){
-            for(Segment segment: robot.getSegments()) {
+        for (Segment[] segment1 : segments)
+        {
+            for (Segment segment : segment1)
+            {
                 Hit hit = ray.hit(segment);
-                if (hit != null) {
-                    if (bestHit == null || (hit.getTime() > 0 && hit.getTime() < bestHit.getTime())) {
+                if (hit != null)
+                {
+                    if (bestHit == null || (hit.getTime() > 0 && hit.getTime() < bestHit.getTime()))
+                    {
                         bestHit = hit;
                     }
                 }

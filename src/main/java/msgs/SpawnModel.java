@@ -1,19 +1,16 @@
 package msgs;
 
-import edu.wpi.rail.jrosbridge.messages.Message;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import edu.wpi.rail.jrosbridge.services.ServiceRequest;
-import edu.wpi.rail.jrosbridge.services.ServiceResponse;
-import edu.wpi.rail.jrosbridge.services.std.Empty;
-
 import javax.json.Json;
-import javax.json.JsonObject;
 
 /**
- * Created by arthur on 05.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class SpawnModel extends ServiceRequest{
     public static final String TYPE = "gazebo_msgs/SpawnModel";
 

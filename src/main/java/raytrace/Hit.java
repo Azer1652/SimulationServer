@@ -1,8 +1,10 @@
 package raytrace;
 
 /**
- * Created by arthur on 12.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class Hit {
 
     private double[] position;

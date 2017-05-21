@@ -4,18 +4,16 @@ import edu.wpi.rail.jrosbridge.Topic;
 import edu.wpi.rail.jrosbridge.callback.TopicCallback;
 import edu.wpi.rail.jrosbridge.messages.Message;
 import edu.wpi.rail.jrosbridge.messages.std.Header;
-import edu.wpi.rail.jrosbridge.messages.std.Time;
 import msgs.LaserScan;
 import raytrace.RayTracer;
-
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonNumber;
 
 /**
- * Created by arthur on 12.05.17.
- */
+ * Created by the following students at the University of Antwerp
+ * Faculty of Applied Engineering: Electronics and ICT
+ * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ **/
 public class MyLaserCallback implements TopicCallback {
     RealClient client;
 
