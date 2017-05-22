@@ -26,7 +26,7 @@ public class SimServer {
         Thread clientAccepter = new Thread(clientReceiver);
         Thread robotUpdater = new Thread(robotHandler);
 
-        testRaytracing();
+        //testRaytracing();
 
         //Accept new clients and subscribe to topic for robot updates
         clientAccepter.start();
