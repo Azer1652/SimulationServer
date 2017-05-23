@@ -43,8 +43,8 @@ public class RealClient extends Client{
             }
         });
 
-        Topic laserScan = new Topic(ros, "/scan", "sensor_msgs/LaserScan", 50);
-        //Topic laserScan = new Topic(ros, "/laser", "sensor_msgs/LaserScan", 100);
+        Topic laserScan = new Topic(ros, "/scan", "sensor_msgs/LaserScan", 90);
+        //Topic laserScan = new Topic(ros, "/laser", "sensor_msgs/LaserScan");
         laserScan.subscribe(new MyLaserCallback(this));
     }
 

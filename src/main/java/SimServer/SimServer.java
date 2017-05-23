@@ -3,6 +3,7 @@ package SimServer;
 import clients.*;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
+import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
 import extras.Quat;
 
@@ -19,6 +20,9 @@ public class SimServer {
     public static RobotHandler robotHandler;
 
     public SimServer(String[] args) {
+        //double[] q = Quat.toEulerianAngle(new Quaternion(0,0,-1, 0.0184));
+        //System.out.println();
+
         //init vars and services
         init();
 

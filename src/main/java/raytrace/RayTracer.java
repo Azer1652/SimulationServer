@@ -22,14 +22,13 @@ public class RayTracer{
 
     public static float[] rayTrace(RealClient client, LaserScan laserScan, int length){
         float[] data = new float[length];
-        int cores = Runtime.getRuntime().availableProcessors();
+        //int cores = Runtime.getRuntime().availableProcessors();
+        int cores = 7;
         ArrayList<RayTraceThread> rayTraceThreads = new ArrayList<>();
         ArrayList<Thread> threads = new ArrayList<>();
         ArrayList<Hit> hits = new ArrayList<>();
 
-        //Get robot pose and direction
-        if(client.ownedRobots.size() != 0)
-        {
+
             Robot robot = client.ownedRobots.get(0);
             double position[] =  new double[]{robot.pose.getPosition().getX(),robot.pose.getPosition().getY(),robot.pose.getPosition().getZ()};
             float[] ranges = laserScan.getRanges();
@@ -97,7 +96,6 @@ public class RayTracer{
                     current += angleDiffRad*cores;
                     i += cores;
                 }
-            }
         }
 
         //return modified array

@@ -30,7 +30,7 @@ public class MyLaserCallback implements TopicCallback {
         Header h;
         //if more than one external robot
         synchronized (client.externalRobots) {
-            if (client.externalRobots.size() > 0) {
+            if (client.externalRobots.size() > 0 && client.ownedRobots.size() > 0) {
                 //Raytrace, modify laserscan
                 float[] updatedRanges = RayTracer.rayTrace(client, laserScan, laserScan.getRanges().length);
                 time = edu.wpi.rail.jrosbridge.primitives.Time.now();
