@@ -19,6 +19,14 @@ public class Robot {
 
     public boolean created = false;
 
+    /**
+     * new Robot
+     * @param id
+     * @param model_name
+     * @param pose
+     * @param twist
+     * @param robotHandler
+     */
     public Robot(long id, String model_name, Pose pose, Twist twist, RobotHandler robotHandler){
         this.id=id;
         this.model_name=model_name;
@@ -48,6 +56,10 @@ public class Robot {
         this.pose=pose;
     }
 
+    /**
+     * This method refreshes the Message string created in the Super. If the values are modified,
+     * the string will not be updated without this function. Thus the wrong data would be sent if published
+     */
     public void refreshStrings(){
         pose = new Pose(new Point(pose.getPosition().getX(), pose.getPosition().getY(), pose.getPosition().getZ()), new Quaternion(pose.getOrientation().getX(), pose.getOrientation().getY(), pose.getOrientation().getZ(), pose.getOrientation().getW()));
         twist = new Twist(new Vector3(twist.getLinear().getX(), twist.getLinear().getY(), twist.getLinear().getZ()), new Vector3(twist.getAngular().getX(), twist.getAngular().getY(), twist.getAngular().getZ()));
@@ -69,12 +81,19 @@ public class Robot {
         return false;
     }
 
+    /**
+     * Get four corners of the robot in a 2D environment
+     *
+     * @return
+     */
     public Segment[] getSegments(){
+        //Four corners
         double[] corner = new double[]{this.pose.getPosition().getX()-0.125, this.pose.getPosition().getY()-0.25, this.pose.getPosition().getZ()};
         double[] corner1 = new double[]{this.pose.getPosition().getX()-0.125, this.pose.getPosition().getY()+0.25, this.pose.getPosition().getZ()};
         double[] corner2 = new double[]{this.pose.getPosition().getX()+0.125, this.pose.getPosition().getY()-0.25, this.pose.getPosition().getZ()};
         double[] corner3 = new double[]{this.pose.getPosition().getX()+0.125, this.pose.getPosition().getY()+0.25, this.pose.getPosition().getZ()};
 
+        //Translate corners
         double[] newcorner = rotationAround3DEuler(pose.getPosition(), corner, Quat.toEulerianAngle(this.pose.getOrientation()));
         double[] newcorner1 = rotationAround3DEuler(pose.getPosition(), corner1, Quat.toEulerianAngle(this.pose.getOrientation()));
         double[] newcorner2 = rotationAround3DEuler(pose.getPosition(), corner2, Quat.toEulerianAngle(this.pose.getOrientation()));
@@ -87,6 +106,7 @@ public class Robot {
         double[] newcorner3 = rotation3D(corner3, this.pose.getOrientation());
         */
 
+        //New segments from translated corners
         Segment s = new Segment(new double[]{newcorner[0], newcorner[1]}, new double[]{newcorner1[0], newcorner1[1]});
         Segment s1 = new Segment(new double[]{newcorner1[0], newcorner1[1]}, new double[]{newcorner3[0], newcorner3[1]});
         Segment s2 = new Segment(new double[]{newcorner3[0], newcorner3[1]}, new double[]{newcorner2[0], newcorner2[1]});
@@ -95,33 +115,18 @@ public class Robot {
         return new Segment[]{s,s1,s2,s3};
     }
 
-    //doesnt work
-    private double[] rotation3D(double[] points, Quaternion orientation){
-        double[] newPoints = new double[3];
-
-        double x_old = points[0];
-        double y_old = points[1];
-        double z_old = points[2];
-
-        double w = Math.cos(orientation.getW()/2.0);
-        double x = orientation.getX()*Math.sin(orientation.getW()/2.0);
-        double y = orientation.getY()*Math.sin(orientation.getW()/2.0);
-        double z = orientation.getZ()*Math.sin(orientation.getW()/2.0);
-
-        double x_new = (1 - 2*y*y -2*z*z)*x_old + (2*x*y + 2*w*z)*y_old + (2*x*z-2*w*y)*z_old;
-        double y_new = (2*x*y - 2*w*z)*x_old + (1 - 2*x*x - 2*z*z)*y_old + (2*y*z + 2*w*x)*z_old;
-        double z_new = (2*x*z + 2*w*y)*x_old + (2*y*z - 2*w*x)*y_old + (1 - 2*x*x - 2*y*y)*z_old;
-
-        newPoints[0] = x_new;
-        newPoints[1] = y_new;
-        newPoints[2] = z_new;
-
-        return newPoints;
-    }
-
+    /**
+     * Rotates a point around a different center point in 2D (yaw in 3D)
+     * @param center
+     * @param point
+     * @param angles
+     * @return
+     */
     private double[] rotationAround3DEuler(Point center, double[] point, double[] angles){
+
         double[] newPoints = new double[3];
 
+        //Translate point to center, rotate, and transform back
         newPoints[0] = center.getX() + (point[0]-center.getX())*Math.cos(angles[2]) - (point[1]-center.getY())*Math.sin(angles[2]);
 
         newPoints[1] = center.getY() + (point[0]-center.getX())*Math.sin(angles[2]) + (point[1]-center.getY())*Math.cos(angles[2]);

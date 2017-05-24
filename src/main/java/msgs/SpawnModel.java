@@ -10,6 +10,8 @@ import javax.json.Json;
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
  * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ *
+ * Used to spawn models in Gazebo
  **/
 public class SpawnModel extends ServiceRequest{
     public static final String TYPE = "gazebo_msgs/SpawnModel";
@@ -23,6 +25,14 @@ public class SpawnModel extends ServiceRequest{
     public SpawnModel() {
     }
 
+    /**
+     * new Spawn model message
+     * @param model_name
+     * @param model_xml
+     * @param robot_namespace
+     * @param initial_pose
+     * @param reference_frame
+     */
     public SpawnModel(String model_name, String model_xml, String robot_namespace, Pose initial_pose, String reference_frame) {
         super(Json.createObjectBuilder().add("model_name", model_name).add("model_xml", model_xml).add("robot_namespace", robot_namespace).add("initial_pose", initial_pose.toJsonObject()).add("reference_frame", reference_frame).build(), "gazebo_msgs/SpawnModel");
         this.model_name = model_name;

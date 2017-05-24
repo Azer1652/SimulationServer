@@ -13,6 +13,8 @@ import javax.json.JsonArrayBuilder;
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
  * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ *
+ * Used by the Real Clients to update the laserScan with the external robots
  **/
 public class MyLaserCallback implements TopicCallback {
     RealClient client;
@@ -28,7 +30,7 @@ public class MyLaserCallback implements TopicCallback {
         Topic updatedLaserScan = new Topic(client.ros, "/updatedScan", "sensor_msgs/LaserScan");
         edu.wpi.rail.jrosbridge.primitives.Time time;
         Header h;
-        //if more than one external robot
+        //if more than one external robot && at least one Owned Robot
         synchronized (client.externalRobots) {
             if (client.externalRobots.size() > 0 && client.ownedRobots.size() > 0) {
                 //Raytrace, modify laserscan

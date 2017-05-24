@@ -19,6 +19,10 @@ public class SimServer {
     private ClientReceiver clientReceiver;
     public static RobotHandler robotHandler;
 
+    /**
+     * New RSMS starts client accepting service and robot updater
+     * @param args
+     */
     public SimServer(String[] args) {
         //double[] q = Quat.toEulerianAngle(new Quaternion(0,0,-1, 0.0184));
         //System.out.println();
@@ -40,12 +44,18 @@ public class SimServer {
         //ros.disconnect();
     }
 
+    /**
+     * Used to test raytracing
+     */
     public void testRaytracing(){
         RealClient client = new RealClient("127.0.0.1", 9090, "test");
         client.ownedRobots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0),Quat.toQuaternion(0,0,0)), new Twist()));
         client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
     }
 
+    /**
+     * Init Services
+     */
     private void init(){
         //init services
         clientReceiver = new ClientReceiver(this);

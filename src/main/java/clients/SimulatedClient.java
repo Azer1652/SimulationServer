@@ -16,6 +16,8 @@ import msgs.SpawnModel;
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
  * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ *
+ * Provides an interface to connect correctly with simulated robots
  **/
 public class SimulatedClient extends Client{
 
@@ -24,7 +26,9 @@ public class SimulatedClient extends Client{
         init();
     }
 
-    //get robots from client
+    /**
+     * Get robots from client and update robots already tracked
+     */
     public void updateOwnedRobots(){
         Topic echoBack = new Topic(ros, "/gazebo/model_states", "gazebo_msgs/ModelStates", 100);
         echoBack.subscribe(new TopicCallback() {
@@ -54,6 +58,10 @@ public class SimulatedClient extends Client{
         });
     }
 
+    /**
+     * Create external robots not yet tracked in client's gazebo instance
+     * update robots already tracked
+     */
     public void drawExternalRobots() {
         synchronized (externalRobots) {
             for (Robot robot : externalRobots) {
@@ -73,7 +81,10 @@ public class SimulatedClient extends Client{
         }
     }
 
-    //works
+    /**
+     * Spawn robot in Gazebo
+     * @param robot
+     */
     protected void createRobot(Robot robot){
         Service spawnModel = new Service(ros, "/gazebo/spawn_sdf_model", "/gazebo/spawn_sdf_model");
 
@@ -95,6 +106,10 @@ public class SimulatedClient extends Client{
         //System.out.println(response.toString());
     }
 
+    /**
+     * Delete robot from gazebo
+     * @param robot
+     */
     protected void deleteRobot(Robot robot){
         Service deleteModel = new Service(ros, "/gazebo/delete_model", "/gazebo/delete_model");
 
@@ -104,7 +119,10 @@ public class SimulatedClient extends Client{
         //System.out.println(response.toString());
     }
 
-    //works
+    /**
+     * Update robot Pose in gazebo
+     * @param robot
+     */
     protected void updateRobot(Robot robot){
         Topic echo = new Topic(ros, "/gazebo/set_model_state", "gazebo_msgs/ModelState");
         robot.refreshStrings();

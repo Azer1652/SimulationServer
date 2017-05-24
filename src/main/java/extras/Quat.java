@@ -7,6 +7,8 @@ import static java.lang.Math.*;
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
  * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ *
+ * Conversion functions from Gazebo API source code
  **/
 // Conversion functions from Gazebo API source code
 public class Quat

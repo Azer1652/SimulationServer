@@ -13,6 +13,8 @@ import java.net.Socket;
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
  * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ *
+ * Accepts clients and adds them to the robotHandler
  **/
 public class ClientReceiver implements Runnable{
 
@@ -23,6 +25,10 @@ public class ClientReceiver implements Runnable{
     SimServer simServer;
     ServerSocket serverSocket;
 
+    /**
+     * New connection
+     * @param server
+     */
     ClientReceiver(SimServer server){
         this.simServer=server;
         try {
@@ -39,6 +45,9 @@ public class ClientReceiver implements Runnable{
 
     public synchronized void shutdown(){shutdown = true;}
 
+    /**
+     * Run thread; Accept clients
+     */
     public void run() {
         while(!shutdown){
             if(accepting){

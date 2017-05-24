@@ -32,10 +32,28 @@ public class LaserScan extends Message{
     private final float[] ranges, intensities;
     private JsonArrayBuilder rangeBuilder, intensityBuilder;
 
+    /**
+     * New Blank Laserscan message
+     */
     public LaserScan(){
         this(new Header(), 0,0,0,0,0,0,0, new float[]{1,2,3}, Json.createArrayBuilder(), new float[]{4,5,6}, Json.createArrayBuilder());
     }
 
+    /**
+     * New lasercan message with updated data
+     * @param header ROS Header message
+     * @param angle_min
+     * @param angle_max
+     * @param angle_increment
+     * @param time_increment
+     * @param scan_time
+     * @param range_min
+     * @param range_max
+     * @param ranges array of raytraced data
+     * @param rangeBuilder used to update the Super's message string correctly
+     * @param intensities array of intensities
+     * @param intensityBuilder used to update the Super's message string correctly
+     */
     public LaserScan(Header header, float angle_min, float angle_max, float angle_increment, float time_increment, float scan_time, float range_min, float range_max,float[] ranges, JsonArrayBuilder rangeBuilder, float[] intensities, JsonArrayBuilder intensityBuilder){
         super(Json.createObjectBuilder()
                 .add(LaserScan.HEADER, header.toJsonObject())
@@ -118,6 +136,11 @@ public class LaserScan extends Message{
         return LaserScan.fromJsonObject(m.toJsonObject());
     }
 
+    /**
+     * jsonObject to new Laserscan
+     * @param jsonObject
+     * @return
+     */
     public static LaserScan fromJsonObject(JsonObject jsonObject) {
         // check the fields
         try {

@@ -24,9 +24,10 @@ public class RayTraceThread implements Runnable
     }
 
     @Override
+    //Raytrace given the current values
     public void run()
     {
-        //todo remove cos and sin by something simpler
+        //todo remove cos and sin by something simpler?
         double dx = Math.cos(angle+currentCarAngleRad);
         double dy = Math.sin(angle+currentCarAngleRad);
 

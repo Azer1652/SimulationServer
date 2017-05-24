@@ -9,6 +9,8 @@ import javax.json.Json;
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
  * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ *
+ * Used to send ModelState messages to gazebo
  **/
 public class ModelState extends Message {
     public static final String FIELD_MODEL_NAME = "model_name";
@@ -22,9 +24,20 @@ public class ModelState extends Message {
     private /*final*/ Twist twist;
     private /*final*/ String reference_frame;
 
+    /**
+     * New blank modelstate message
+     */
     public ModelState(){
         this("foo", new Pose(), new Twist(), "foo");
     }
+
+    /**
+     * New updated model state message
+     * @param model_name
+     * @param pose
+     * @param twist
+     * @param reference_frame
+     */
     public ModelState(String model_name, Pose pose, Twist twist, String reference_frame){
         super(Json.createObjectBuilder()
                 .add("model_name", model_name)

@@ -35,6 +35,11 @@ public class Ray
         this.direction[1] = y;
     }
 
+    /**
+     * calculate the interection between this ray and a segment
+     * @param segment
+     * @return
+     */
     public Hit hit(Segment segment){
         if(this.direction == segment.direction)
             return null;

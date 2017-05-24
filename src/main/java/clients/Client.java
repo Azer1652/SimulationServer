@@ -44,6 +44,9 @@ abstract public class Client {
         ros = new Ros(ip, port);
     }
 
+    /**
+     * Add client to robotHandler to allow for robot updates
+     */
     public void init(){
         ros.connect();
 
@@ -61,6 +64,9 @@ abstract public class Client {
     //get robots from client
     abstract public void updateOwnedRobots();
 
+    /**
+     * Add a clone of an external robot to the exteralrobots
+     */
     public void addAndUpdateExternalRobot(Robot robot){
         synchronized (externalRobots){
             if(!externalRobots.contains(robot)){
@@ -71,5 +77,9 @@ abstract public class Client {
         }
     }
 
+    /**
+     * Create external robots not yet tracked in client's gazebo instance
+     * update robots already tracked
+     */
     abstract public void drawExternalRobots();
 }

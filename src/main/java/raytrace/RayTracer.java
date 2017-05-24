@@ -12,6 +12,10 @@ import java.util.List;
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
  * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ *
+ * The Raytracer raytraces a scene by creating and managing threads performing the raytracing
+ *
+ * Only works with real clients
  **/
 public class RayTracer{
 
@@ -20,15 +24,23 @@ public class RayTracer{
     //private final static double angleEndRad = Math.PI-angleStartRad;
     private final static double angleDiffRad = Math.toRadians(270)/(1080);
 
+    /**
+     * Start a new Raytrace manager
+     * @param client
+     * @param laserScan
+     * @param length
+     * @return
+     */
     public static float[] rayTrace(RealClient client, LaserScan laserScan, int length){
         float[] data = new float[length];
-        //int cores = Runtime.getRuntime().availableProcessors();
-        int cores = 7;
+        //Allow for one core to be idle
+        int cores = Runtime.getRuntime().availableProcessors()-1;
+        //int cores = 7;
         ArrayList<RayTraceThread> rayTraceThreads = new ArrayList<>();
         ArrayList<Thread> threads = new ArrayList<>();
         ArrayList<Hit> hits = new ArrayList<>();
 
-
+            //Get the robot to be traced from
             Robot robot = client.ownedRobots.get(0);
             double position[] =  new double[]{robot.pose.getPosition().getX(),robot.pose.getPosition().getY(),robot.pose.getPosition().getZ()};
             float[] ranges = laserScan.getRanges();
@@ -58,6 +70,7 @@ public class RayTracer{
                     threads.get(m).start();
                 }
 
+                //rayTrace
                 while (i < length) // length = amount of rays (1080)
                 {
                     for(int m = 0; m<cores; m++)
@@ -67,6 +80,7 @@ public class RayTracer{
                         threads.get(m).start();
                     }
 
+                    //Wait for threads
                     try
                     {
                         for(int j = 0; j< cores; j++){
@@ -79,6 +93,7 @@ public class RayTracer{
                         e.printStackTrace();
                     }
 
+                    //Update hits
                     for(int k = 0; k<cores; k++){
                         Hit hit = rayTraceThreads.get(k).hit;
                         if (hit != null)
