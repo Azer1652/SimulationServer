@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
- * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ * Janssens Arthur, De Laet Jan and Verhoeven Peter.
  **/
 public class RayTraceThread implements Runnable
 {
@@ -16,6 +16,13 @@ public class RayTraceThread implements Runnable
     Hit hit = null;
     ArrayList<Segment[]> segments;
 
+    /**
+     *
+     * @param carLocation
+     * @param angle
+     * @param currentCarAngleRad
+     * @param segments
+     */
     public RayTraceThread(Point3D carLocation, double angle, double currentCarAngleRad, ArrayList<Segment[]> segments){
         this.carLocation = carLocation;
         this.angle = angle;

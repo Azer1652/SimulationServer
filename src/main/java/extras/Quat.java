@@ -6,13 +6,20 @@ import static java.lang.Math.*;
 /**
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
- * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ * Janssens Arthur, De Laet Jan and Verhoeven Peter.
  *
  * Conversion functions from Gazebo API source code
  **/
 // Conversion functions from Gazebo API source code
 public class Quat
 {
+    /**
+     *
+     * @param roll
+     * @param pitch
+     * @param yaw
+     * @return
+     */
     public static Quaternion toQuaternion(double roll, double pitch, double yaw)
     {
         double phi = roll / 2.0;
@@ -28,7 +35,12 @@ public class Quat
 
         return new Quaternion(norm[1],norm[2],norm[3],norm[0]);
     }
-    
+
+    /**
+     *
+     * @param q
+     * @return
+     */
     public static double[] toEulerianAngle(Quaternion q)
     {
         double[] norm = Normalize(q.getW(),q.getX(),q.getY(),q.getZ());
@@ -54,7 +66,9 @@ public class Quat
         return new double[]{roll, pitch, yaw};
     }
 
-    // return a new Quaternion whose value is (this * b)
+    /**
+     *     return a new Quaternion whose value is (this * b)
+      */
     public static Quaternion times(Quaternion a, Quaternion b) {
         double y0 = a.getX()*b.getX() - a.getY()*b.getY() - a.getZ()*b.getZ() - a.getW()*b.getW();
         double y1 = a.getX()*b.getY() + a.getY()*b.getX() + a.getZ()*b.getW() - a.getW()*b.getZ();
@@ -63,6 +77,14 @@ public class Quat
         return new Quaternion(y0, y1, y2, y3);
     }
 
+    /**
+     *
+     * @param w
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
     private static double[] Normalize(double w, double x, double y, double z)
     {
         double s = sqrt(w * w + x * x + y * y + z * z);

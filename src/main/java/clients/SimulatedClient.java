@@ -15,7 +15,7 @@ import msgs.SpawnModel;
 /**
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
- * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ * Janssens Arthur, De Laet Jan and Verhoeven Peter.
  *
  * Provides an interface to connect correctly with simulated robots
  **/
@@ -75,6 +75,10 @@ public class SimulatedClient extends Client{
         }
     }
 
+    /**
+     *
+     * @param robot
+     */
     public void updateExternalRobotPose(Robot robot){
         synchronized (externalRobots) {
             externalRobots.get(externalRobots.indexOf(robot)).updateRobot(robot.pose, robot.twist);

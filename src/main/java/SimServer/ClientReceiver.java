@@ -12,7 +12,7 @@ import java.net.Socket;
 /**
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
- * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ * Janssens Arthur, De Laet Jan and Verhoeven Peter.
  *
  * Accepts clients and adds them to the robotHandler
  **/

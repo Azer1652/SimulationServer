@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
- * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ * Janssens Arthur, De Laet Jan and Verhoeven Peter.
  **/
 abstract public class Client {
 
@@ -22,6 +22,10 @@ abstract public class Client {
     public final List<Robot> ownedRobots = Collections.synchronizedList(new ArrayList<Robot>());
     public final List<Robot> externalRobots = Collections.synchronizedList(new ArrayList<Robot>());
 
+    /**
+     *
+     * @param ip
+     */
     public Client(String ip){
         try {
             this.ip = InetAddress.getByName(ip);
@@ -34,6 +38,11 @@ abstract public class Client {
         }
     }
 
+    /**
+     *
+     * @param ip
+     * @param port
+     */
     public Client(String ip, int port){
         try {
             this.ip = InetAddress.getByName(ip);

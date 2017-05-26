@@ -7,7 +7,7 @@ import raytrace.Segment;
 /**
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
- * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ * Janssens Arthur, De Laet Jan and Verhoeven Peter.
  **/
 public class Robot {
 
@@ -43,6 +43,11 @@ public class Robot {
         this.model_name = str;
     }
 
+    /**
+     *
+     * @param pose
+     * @param twist
+     */
     public void updateRobot(Pose pose, Twist twist){
         this.pose=pose;
         this.twist=twist;

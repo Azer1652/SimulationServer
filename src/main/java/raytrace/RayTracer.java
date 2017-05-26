@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
- * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ * Janssens Arthur, De Laet Jan and Verhoeven Peter.
  *
  * The Raytracer raytraces a scene by creating and managing threads performing the raytracing
  *

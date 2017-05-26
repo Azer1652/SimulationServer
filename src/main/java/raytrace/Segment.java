@@ -3,7 +3,7 @@ package raytrace;
 /**
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
- * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ * Janssens Arthur, De Laet Jan and Verhoeven Peter.
  **/
 public class Segment {
 
@@ -13,6 +13,11 @@ public class Segment {
     public double position[];
     public double direction[];
 
+    /**
+     *
+     * @param start
+     * @param end
+     */
     public Segment(double[] start, double[] end){
         this.start = start;
         this.end = end;

@@ -12,7 +12,7 @@ import javax.json.JsonArrayBuilder;
 /**
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
- * Janssens Arthur, De Laet Jan & Verhoeven Peter.
+ * Janssens Arthur, De Laet Jan and Verhoeven Peter.
  *
  * Used by the Real Clients to update the laserScan with the external robots
  **/
@@ -23,6 +23,10 @@ public class MyLaserCallback implements TopicCallback {
         this.client = client;
     }
 
+    /**
+     *
+     * @param message
+     */
     @Override
     public void handleMessage(Message message) {
         //Get laserscan
@@ -51,6 +55,11 @@ public class MyLaserCallback implements TopicCallback {
         }
     }
 
+    /**
+     *
+     * @param ranges
+     * @return
+     */
     private JsonArrayBuilder getJsonArrayBuilder(float[] ranges){
         JsonArrayBuilder jsonRangeBuilder = Json.createArrayBuilder();
         for (float f : ranges){
