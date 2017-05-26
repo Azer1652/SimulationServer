@@ -23,6 +23,10 @@ public class MyLaserCallback implements TopicCallback {
         this.client = client;
     }
 
+    /**
+     *
+     * @param message
+     */
     @Override
     public void handleMessage(Message message) {
         //Get laserscan
@@ -51,6 +55,11 @@ public class MyLaserCallback implements TopicCallback {
         }
     }
 
+    /**
+     *
+     * @param ranges
+     * @return
+     */
     private JsonArrayBuilder getJsonArrayBuilder(float[] ranges){
         JsonArrayBuilder jsonRangeBuilder = Json.createArrayBuilder();
         for (float f : ranges){

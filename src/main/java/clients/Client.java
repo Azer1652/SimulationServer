@@ -22,6 +22,10 @@ abstract public class Client {
     public final List<Robot> ownedRobots = Collections.synchronizedList(new ArrayList<Robot>());
     public final List<Robot> externalRobots = Collections.synchronizedList(new ArrayList<Robot>());
 
+    /**
+     *
+     * @param ip
+     */
     public Client(String ip){
         try {
             this.ip = InetAddress.getByName(ip);
@@ -34,6 +38,11 @@ abstract public class Client {
         }
     }
 
+    /**
+     *
+     * @param ip
+     * @param port
+     */
     public Client(String ip, int port){
         try {
             this.ip = InetAddress.getByName(ip);

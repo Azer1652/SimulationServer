@@ -75,6 +75,10 @@ public class SimulatedClient extends Client{
         }
     }
 
+    /**
+     *
+     * @param robot
+     */
     public void updateExternalRobotPose(Robot robot){
         synchronized (externalRobots) {
             externalRobots.get(externalRobots.indexOf(robot)).updateRobot(robot.pose, robot.twist);

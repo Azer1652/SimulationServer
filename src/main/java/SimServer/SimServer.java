@@ -41,6 +41,8 @@ public class SimServer {
         //Push updates to robots
         robotUpdater.start();
 
+        testRaytracing();
+
         //ros.disconnect();
     }
 

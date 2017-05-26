@@ -43,6 +43,11 @@ public class Robot {
         this.model_name = str;
     }
 
+    /**
+     *
+     * @param pose
+     * @param twist
+     */
     public void updateRobot(Pose pose, Twist twist){
         this.pose=pose;
         this.twist=twist;

@@ -13,6 +13,11 @@ public class Segment {
     public double position[];
     public double direction[];
 
+    /**
+     *
+     * @param start
+     * @param end
+     */
     public Segment(double[] start, double[] end){
         this.start = start;
         this.end = end;
