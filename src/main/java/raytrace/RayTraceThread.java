@@ -3,6 +3,8 @@ package raytrace;
 import javafx.geometry.Point3D;
 import java.util.ArrayList;
 
+import static raytrace.RayTracer.angleDiffRad;
+
 /**
  * Created by the following students at the University of Antwerp
  * Faculty of Applied Engineering: Electronics and ICT
@@ -13,7 +15,8 @@ public class RayTraceThread implements Runnable
     Point3D carLocation;
     double angle;
     double currentCarAngleRad;
-    Hit hit = null;
+    int numToTrace;
+    ArrayList<Hit> hit;
     ArrayList<Segment[]> segments;
 
     /**
@@ -22,18 +25,28 @@ public class RayTraceThread implements Runnable
      * @param angle
      * @param currentCarAngleRad
      * @param segments
+     * @param numToTrace
      */
-    public RayTraceThread(Point3D carLocation, double angle, double currentCarAngleRad, ArrayList<Segment[]> segments){
+    public RayTraceThread(Point3D carLocation, double angle, double currentCarAngleRad, ArrayList<Segment[]> segments, int numToTrace){
         this.carLocation = carLocation;
         this.angle = angle;
         this.currentCarAngleRad = currentCarAngleRad;
         this.segments = segments;
+        this.numToTrace = numToTrace;
+        this.hit = new ArrayList<>();
     }
 
     @Override
     //Raytrace given the current values
     public void run()
     {
+        for(int i = 0; i < numToTrace; i++){
+            trace();
+            angle += angleDiffRad;
+        }
+    }
+
+    private void trace(){
         //todo remove cos and sin by something simpler?
         double dx = Math.cos(angle+currentCarAngleRad);
         double dy = Math.sin(angle+currentCarAngleRad);
@@ -59,6 +72,6 @@ public class RayTraceThread implements Runnable
                 }
             }
         }
-        this.hit = bestHit;
+        this.hit.add(bestHit);
     }
 }
