@@ -1,8 +1,12 @@
 package SimServer;
 
 import edu.wpi.rail.jrosbridge.messages.geometry.*;
+import extras.Corners;
 import extras.Quat;
 import raytrace.Segment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by the following students at the University of Antwerp
@@ -84,6 +88,10 @@ public class Robot {
                 return false;
         }
         return false;
+    }
+
+    public Corners getCorners(){
+        return new Corners(this.pose.getPosition().getX(), this.pose.getPosition().getY());
     }
 
     /**

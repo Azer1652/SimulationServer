@@ -41,7 +41,7 @@ public class SimServer {
         //Push updates to robots
         robotUpdater.start();
 
-        //testRaytracing();
+        testRaytracing();
 
         //ros.disconnect();
     }
@@ -50,7 +50,7 @@ public class SimServer {
      * Used to test raytracing
      */
     public void testRaytracing(){
-        RealClient client = new RealClient("127.0.0.1", 9090, "test");
+        RealClient client = new RealClient("192.168.1.167", 9090, "test");
         client.ownedRobots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0),Quat.toQuaternion(0,0,0)), new Twist()));
         client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
     }

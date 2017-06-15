@@ -34,11 +34,13 @@ public class MyLaserCallback implements TopicCallback {
         Topic updatedLaserScan = new Topic(client.ros, "/updatedScan", "sensor_msgs/LaserScan");
         edu.wpi.rail.jrosbridge.primitives.Time time;
         Header h;
+
+        RayTracer rayTracer = new RayTracer();
         //if more than one external robot && at least one Owned Robot
         synchronized (client.externalRobots) {
             if (client.externalRobots.size() > 0 && client.ownedRobots.size() > 0) {
                 //Raytrace, modify laserscan
-                float[] updatedRanges = RayTracer.rayTrace(client, laserScan, laserScan.getRanges().length);
+                float[] updatedRanges = rayTracer.rayTrace(client, laserScan, laserScan.getRanges().length);
                 time = edu.wpi.rail.jrosbridge.primitives.Time.now();
                 h = new Header(laserScan.getHeader().getSeq(), time, new String("laser_2"));
 
