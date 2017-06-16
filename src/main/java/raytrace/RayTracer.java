@@ -48,7 +48,7 @@ public class RayTracer{
         int cores = Runtime.getRuntime().availableProcessors()-1;
         //int cores = 7;
         Map<RayTraceThread, List<Range>> rayTraceThreadsMap = new HashMap<>();
-        List<RayTraceThread> rayTraceThreads = new ArrayList<>();
+        Map<Thread, RayTraceThread> rayTraceThreads = new HashMap<>();
         ArrayList<Thread> threads = new ArrayList<>();
         ArrayList<Hit> hits = new ArrayList<>();
 
@@ -85,8 +85,9 @@ public class RayTracer{
             //Generate Threads
             //Take from ranges and fill threads untill equally spread
             ListIterator<Range> it = rangeArrayList.listIterator();
+            Range r = null;
             if(it.hasNext()) {
-                Range r = it.next();
+                r = it.next();
                 for (int m = 0; m < cores; m++) {
                     //thread for core
                     RayTraceThread rayTraceThread = new RayTraceThread(new Point3D(position[0], position[1], position[2]), currentCarAngleRad, segments, numToTracePerThread);
@@ -100,48 +101,40 @@ public class RayTracer{
                         r = it.next();
                     }
 
-                    rayTraceThreads.add(rayTraceThread);
-                    //rayTraceThreadsMap.put(rayTraceThread, )
-
-                    //threads.add(new Thread(rayTraceThreads.get()));
-                    threads.get(m).start();
+                    //setup and start thread
+                    Thread t = new Thread(rayTraceThread);
+                    rayTraceThreads.put(t, rayTraceThread);
+                    threads.add(t);
+                    t.start();
                 }
             }
 
             //caclulate remainder
             numToTracePerThread = numRangesToTrace%cores;
-            //TODO
-            //t.run();
-            //hits.addAll(t.hit);
+            if(numRangesToTrace != 0) {
+                //thread for core
+                RayTraceThread rayTraceThread = new RayTraceThread(new Point3D(position[0], position[1], position[2]), currentCarAngleRad, segments, numToTracePerThread);
+
+                rayTraceThread.fill(r);
+
+                //setup and start thread
+                Thread t = new Thread(rayTraceThread);
+                rayTraceThreads.put(t, rayTraceThread);
+                threads.add(t);
+                t.start();
+            }
 
             //Wait for threads
             try
             {
-                for(int j = 0; j< cores; j++){
-                    threads.get(j).join();
-                    hits.addAll(rayTraceThreads.get(j).hit);
+                for(Thread t : threads){
+                    t.join();
+                    addHits(rayTraceThreads.get(t));
                 }
 
             } catch (InterruptedException e)
             {
                 e.printStackTrace();
-            }
-
-            //Update data
-            Iterator<Hit> hitIterator = hits.iterator();
-            for(int i = 0; i < length; i++) // length = amount of rays (1080)
-            {
-                //Update hits
-                Hit hit = hitIterator.next();
-                if (hit != null)
-                {
-                    if (hit.getTime() < ranges[i])
-                        data[i] = (float) hit.getTime();
-                }
-                else
-                {
-                    data[i] = ranges[i];
-                }
             }
         }
 
@@ -152,6 +145,25 @@ public class RayTracer{
 
         //return modified array
         return data;
+    }
+
+    private void addHits(RayTraceThread rayTraceThread){
+        //Update data
+        Iterator<Hit> hitIterator = hits.iterator();
+        for(int i = 0; i < length; i++) // length = amount of rays (1080)
+        {
+            //Update hits
+            Hit hit = hitIterator.next();
+            if (hit != null)
+            {
+                if (hit.getTime() < ranges[i])
+                    data[i] = (float) hit.getTime();
+            }
+            else
+            {
+                data[i] = ranges[i];
+            }
+        }
     }
 
     // Conversion Angles to X-th ray
