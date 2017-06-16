@@ -4,7 +4,6 @@ import SimServer.Robot;
 import clients.RealClient;
 import extras.Corners;
 import extras.Quat;
-import javafx.collections.transformation.SortedList;
 import javafx.geometry.Point3D;
 import msgs.LaserScan;
 
@@ -24,6 +23,10 @@ public class RayTracer{
     public final static double angleStart = -135;
     public final static double angleEnd = 135;
     public final static double angleStartRad = Math.toRadians(angleStart); //-0.28;
+
+    public static long totalTraceTime = 0;
+    public static long numTraces = 0;
+    public long timeToTrace;
     //private final static double angleEndRad = Math.PI-angleStartRad;
     public static double angleDiffRad;
 
@@ -37,6 +40,7 @@ public class RayTracer{
      * @return
      */
     public float[] rayTrace(RealClient client, LaserScan laserScan, int length){
+        long time = System.currentTimeMillis();
         this.length = length;
         angleDiffRad = Math.toRadians(angleEnd*2)/(length);
         float[] data = new float[length];
@@ -61,13 +65,17 @@ public class RayTracer{
             double current = angleStartRad;
             double currentCarAngleRad = Quat.toEulerianAngle(robot.pose.getOrientation())[2];
 
-            //segments to trace against (robot edges)
+            //get segments to trace against (robot edges) and robot angles (start and end of tracing range)
             ArrayList<Segment[]> segments = new ArrayList<>();
+            ArrayList<Range> rangeArrayList = new ArrayList<>();
             for(Robot r : externalRobots)
             {
-                robotToAngles(r, position);
                 segments.add(r.getSegments());
+                rangeArrayList.add(robotToAngles(r));
             }
+
+            //Get Final Tracing Ranges
+            rangeArrayList = processOverlappingRanges(rangeArrayList);
 
             int numToTrace = length/cores;
 
@@ -116,6 +124,11 @@ public class RayTracer{
             }
         }
 
+        long endTime = System.currentTimeMillis();
+        timeToTrace = endTime -time;
+        totalTraceTime += timeToTrace;
+        numTraces++;
+
         //return modified array
         return data;
     }
@@ -136,7 +149,7 @@ public class RayTracer{
         return (int) Math.floor(angle/(angleEnd*2)*(this.length-1));
     }
 
-    private double[] robotToAngles(Robot robot, double[] position){
+    private Range robotToAngles(Robot robot){
         Corners c = robot.getCorners();
 
         List<Integer> values = new ArrayList<>();
@@ -154,10 +167,71 @@ public class RayTracer{
 
         Collections.sort(values);
 
-        double start = values.get(0);
-        double end = values.get(3);
+        int start = values.get(0);
+        int end = values.get(3);
 
-        return new double[]{start, end};
+        return new Range(start, end);
+    }
+
+    public ArrayList<Range> processOverlappingRanges(ArrayList<Range> rangeArrayList){
+        ArrayList<Range> returnArray = new ArrayList<>();
+
+        ArrayList<Range> toRemove = new ArrayList<>();
+
+        ListIterator<Range> it = rangeArrayList.listIterator();
+        while(it.hasNext()){
+            Range r = it.next();
+            if(!toRemove.contains(r)){
+                int initialStart;
+                int start = r.start;
+                int initialEnd;
+                int end = r.end;
+                ArrayList<Range> temp = (ArrayList<Range>) rangeArrayList.clone();
+
+                //Expand
+                do {
+                    initialStart = start;
+                    initialEnd = end;
+                    ListIterator<Range> iterator = temp.listIterator();
+                    while (iterator.hasNext()) {
+                        Range r2 = iterator.next();
+                        if (r2.equals(r))
+                            if (iterator.hasNext()) {
+                                iterator.remove();
+                                r2 = iterator.next();
+                            }
+
+                        if (r2.start < r.start) {
+                            if (r2.end > r.start) {
+                                start = r2.start;
+                                iterator.remove();
+                                toRemove.add(r2);
+                                if (r2.end > r.end)
+                                    end = r2.end;
+                            }
+                        } else if (r.start < r2.start) {
+                            if (r.end > r2.start) {
+                                if (r.end < r2.end) {
+                                    iterator.remove();
+                                    toRemove.add(r2);
+                                    end = r2.end;
+                                }
+                            }
+                        }
+                    }
+                } while (initialStart != start || initialEnd != end);
+                returnArray.add(new Range(start, end));
+            }
+            it.remove();
+        }
+
+
+
+        return returnArray;
+    }
+
+    public static long getAverageTraceTime(){
+        return totalTraceTime/numTraces;
     }
 
 }

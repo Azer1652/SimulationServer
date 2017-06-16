@@ -6,6 +6,10 @@ import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
 import extras.Quat;
+import raytrace.Range;
+import raytrace.RayTracer;
+
+import java.util.ArrayList;
 
 /**
  * Created by the following students at the University of Antwerp
@@ -41,7 +45,8 @@ public class SimServer {
         //Push updates to robots
         robotUpdater.start();
 
-        testRaytracing();
+        //testRaytracing();
+        testOverlappingRanges();
 
         //ros.disconnect();
     }
@@ -53,6 +58,22 @@ public class SimServer {
         RealClient client = new RealClient("192.168.1.167", 9090, "test");
         client.ownedRobots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0),Quat.toQuaternion(0,0,0)), new Twist()));
         client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
+    }
+
+    public void testOverlappingRanges(){
+        RayTracer tracer = new RayTracer();
+
+        ArrayList<Range> ranges = new ArrayList<Range>();
+        ranges.add(new Range(0, 50));
+        ranges.add(new Range(25, 75));
+
+        ranges.add(new Range(100, 200));
+        ranges.add(new Range(90, 220));
+
+        ranges.add(new Range(250, 300));
+        ranges.add(new Range(240, 290));
+
+        ranges = tracer.processOverlappingRanges(ranges);
     }
 
     /**
