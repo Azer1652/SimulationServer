@@ -47,7 +47,8 @@ public class RayTracer{
         //Allow for one core to be idle
         int cores = Runtime.getRuntime().availableProcessors()-1;
         //int cores = 7;
-        ArrayList<RayTraceThread> rayTraceThreads = new ArrayList<>();
+        Map<RayTraceThread, List<Range>> rayTraceThreadsMap = new HashMap<>();
+        List<RayTraceThread> rayTraceThreads = new ArrayList<>();
         ArrayList<Thread> threads = new ArrayList<>();
         ArrayList<Hit> hits = new ArrayList<>();
 
@@ -77,15 +78,34 @@ public class RayTracer{
             //Get Final Tracing Ranges
             rangeArrayList = processOverlappingRanges(rangeArrayList);
 
-            int numToTrace = length/cores;
+            //Collections.sort(rangeArrayList);
+            int numRangesToTrace = countNumRanges(rangeArrayList);
+            int numToTracePerThread = numRangesToTrace/cores;
 
             //Generate Threads
-            for(int m = 0; m<cores; m++)
-            {
-                rayTraceThreads.add(new RayTraceThread(new Point3D(position[0],position[1],position[2]), current+(angleDiffRad*numToTrace)*(m), currentCarAngleRad, segments, numToTrace));
-                threads.add(new Thread(rayTraceThreads.get(m)));
-                threads.get(m).start();
+            //Take from ranges and fill threads untill equally spread
+            Iterator<Range> it = rangeArrayList.iterator();
+            if(it.hasNext()) {
+                Range r = it.next();
+                for (int m = 0; m < cores; m++) {
+                    //thread for core
+                    RayTraceThread rayTraceThread = new RayTraceThread(new Point3D(position[0], position[1], position[2]), currentCarAngleRad, segments, numToTracePerThread);
+
+
+
+                    rayTraceThreads.add(rayTraceThread);
+                    //rayTraceThreadsMap.put(rayTraceThread, )
+
+                    threads.add(new Thread(rayTraceThreads.get()));
+                    threads.get(m).start();
+                }
             }
+
+            //caclulate remainder
+            numToTracePerThread = numRangesToTrace%cores;
+            //TODO
+            t.run();
+            hits.addAll(t.hit);
 
             //Wait for threads
             try
@@ -99,12 +119,6 @@ public class RayTracer{
             {
                 e.printStackTrace();
             }
-
-            //caclulate remainder
-            numToTrace = length%cores;
-            RayTraceThread t = new RayTraceThread(new Point3D(position[0],position[1],position[2]), current+(angleDiffRad*numToTrace)*(cores), currentCarAngleRad, segments, numToTrace);
-            t.run();
-            hits.addAll(t.hit);
 
             //Update data
             Iterator<Hit> hitIterator = hits.iterator();
@@ -224,10 +238,19 @@ public class RayTracer{
             }
             it.remove();
         }
-
-
-
         return returnArray;
+    }
+
+    private int countNumRanges(List<Range> ranges){
+        int num = 0;
+        for(Range r : ranges){
+            num += r.end-r.start;
+        }
+        return num;
+    }
+
+    private Range fillRayTraceThread(RayTraceThread rayTraceThread){
+
     }
 
     public static long getAverageTraceTime(){
