@@ -21,10 +21,13 @@ import java.util.*;
  **/
 public class RayTracer{
 
-    //This value is supposed to be divided by -pi/4, but it generates an offset if you don't substract 0.1
-    private final static double angleStartRad = Math.toRadians(-135); //-0.28;
+    public final static double angleStart = -135;
+    public final static double angleEnd = 135;
+    public final static double angleStartRad = Math.toRadians(angleStart); //-0.28;
     //private final static double angleEndRad = Math.PI-angleStartRad;
-    public final static double angleDiffRad = Math.toRadians(270)/(1080);
+    public static double angleDiffRad;
+
+    private int length;
 
     /**
      * Start a new Raytrace manager
@@ -34,6 +37,8 @@ public class RayTracer{
      * @return
      */
     public float[] rayTrace(RealClient client, LaserScan laserScan, int length){
+        this.length = length;
+        angleDiffRad = Math.toRadians(angleEnd*2)/(length);
         float[] data = new float[length];
         //Allow for one core to be idle
         int cores = Runtime.getRuntime().availableProcessors()-1;
@@ -116,11 +121,19 @@ public class RayTracer{
     }
 
     // Conversion Angles to X-th ray
-    private static int mappingAngle(double angle)
+
+    /**
+     *
+     * @param angle in radians
+     * @return value between
+     */
+    private int mappingAngle(double angle)
     {
-        angle += 3/4*Math.PI;
+        //get in degrees and make positive
+        angle += 3.0/4.0*Math.PI;
         angle = angle*180/Math.PI;
-        return (int) Math.ceil(angle * 4);
+
+        return (int) Math.floor(angle/(angleEnd*2)*(this.length-1));
     }
 
     private double[] robotToAngles(Robot robot, double[] position){
@@ -128,14 +141,16 @@ public class RayTracer{
 
         List<Integer> values = new ArrayList<>();
 
-        double angle = Math.atan2(c.corner[1], c.corner[0]) * 180 / Math.PI;
-        double angle1 = Math.atan2(c.corner1[1], c.corner1[0]) * 180 / Math.PI;
-        double angle2 = Math.atan2(c.corner2[1], c.corner2[0]) * 180 / Math.PI;
-        double angle3 = Math.atan2(c.corner3[1], c.corner3[0]) * 180 / Math.PI;
-        values.add(mappingAngle(angle));
-        values.add(mappingAngle(angle1));
-        values.add(mappingAngle(angle2));
-        values.add(mappingAngle(angle3));
+        //testing
+        //values.add(mappingAngle(angleStartRad)); //0
+        //values.add(mappingAngle(0)); //n/2
+        //values.add(mappingAngle(-angleStartRad)); //n
+
+        //four corner values
+        values.add(mappingAngle(Math.atan2(c.corner[1], c.corner[0])));
+        values.add(mappingAngle(Math.atan2(c.corner1[1], c.corner1[0])));
+        values.add(mappingAngle(Math.atan2(c.corner2[1], c.corner2[0])));
+        values.add(mappingAngle(Math.atan2(c.corner3[1], c.corner3[0])));
 
         Collections.sort(values);
 
