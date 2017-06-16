@@ -13,6 +13,10 @@ public class Range /* implements Comparable<Range>*/{
         this.end = e;
     }
 
+    public int size(){
+        return end-start;
+    }
+
     /*
     @Override
     public int compareTo(Range o) {

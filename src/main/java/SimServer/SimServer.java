@@ -10,6 +10,7 @@ import raytrace.Range;
 import raytrace.RayTracer;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 /**
  * Created by the following students at the University of Antwerp
@@ -46,7 +47,7 @@ public class SimServer {
         robotUpdater.start();
 
         //testRaytracing();
-        testOverlappingRanges();
+        //testOverlappingRanges();
 
         //ros.disconnect();
     }

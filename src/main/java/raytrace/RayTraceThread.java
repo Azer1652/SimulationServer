@@ -42,8 +42,28 @@ public class RayTraceThread implements Runnable
         ranges = new ArrayList<>();
     }
 
+    public boolean full(){
+        if(remaining == 0){
+            return true;
+        }else
+            return false;
+    }
+
     public Range fill(Range r){
-        //TODO
+        if(r.size() == remaining){
+            ranges.add(r);
+            remaining = 0;
+            return null;
+        }else if(r.size() < remaining){
+            ranges.add(r);
+            remaining -= r.size();
+            return null;
+        }else if(r.size() > remaining){
+            ranges.add(new Range(r.start, r.start+remaining));
+            remaining = 0;
+            return new Range(r.start+remaining, r.end);
+        }
+        return null;
     }
 
     @Override

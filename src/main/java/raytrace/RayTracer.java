@@ -84,19 +84,26 @@ public class RayTracer{
 
             //Generate Threads
             //Take from ranges and fill threads untill equally spread
-            Iterator<Range> it = rangeArrayList.iterator();
+            ListIterator<Range> it = rangeArrayList.listIterator();
             if(it.hasNext()) {
                 Range r = it.next();
                 for (int m = 0; m < cores; m++) {
                     //thread for core
                     RayTraceThread rayTraceThread = new RayTraceThread(new Point3D(position[0], position[1], position[2]), currentCarAngleRad, segments, numToTracePerThread);
 
-
+                    while(!rayTraceThread.full()){
+                        Range r2 = rayTraceThread.fill(r);
+                        if(r2 != null) {
+                            it.add(r2);
+                            it.previous();
+                        }
+                        r = it.next();
+                    }
 
                     rayTraceThreads.add(rayTraceThread);
                     //rayTraceThreadsMap.put(rayTraceThread, )
 
-                    threads.add(new Thread(rayTraceThreads.get()));
+                    //threads.add(new Thread(rayTraceThreads.get()));
                     threads.get(m).start();
                 }
             }
@@ -104,8 +111,8 @@ public class RayTracer{
             //caclulate remainder
             numToTracePerThread = numRangesToTrace%cores;
             //TODO
-            t.run();
-            hits.addAll(t.hit);
+            //t.run();
+            //hits.addAll(t.hit);
 
             //Wait for threads
             try
@@ -247,10 +254,6 @@ public class RayTracer{
             num += r.end-r.start;
         }
         return num;
-    }
-
-    private Range fillRayTraceThread(RayTraceThread rayTraceThread){
-
     }
 
     public static long getAverageTraceTime(){
