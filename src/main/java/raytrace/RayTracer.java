@@ -4,7 +4,6 @@ import SimServer.Robot;
 import clients.RealClient;
 import extras.Corners;
 import extras.Quat;
-import javafx.collections.transformation.SortedList;
 import javafx.geometry.Point3D;
 import msgs.LaserScan;
 
@@ -29,6 +28,8 @@ public class RayTracer{
 
     private int length;
 
+    public long time = 0;
+
     /**
      * Start a new Raytrace manager
      * @param client
@@ -39,7 +40,8 @@ public class RayTracer{
     public float[] rayTrace(RealClient client, LaserScan laserScan, int length){
         this.length = length;
         angleDiffRad = Math.toRadians(angleEnd*2)/(length);
-        float[] data = new float[length];
+        long startTime = System.currentTimeMillis();
+        float[] data = laserScan.getRanges();
         //Allow for one core to be idle
         int cores = Runtime.getRuntime().availableProcessors()-1;
         //int cores = 7;
@@ -113,8 +115,15 @@ public class RayTracer{
                 {
                     data[i] = ranges[i];
                 }
+                if(hit != null) {
+                    if (hit.getTime() < data[i])
+                        data[i] = (float) hit.getTime();
+                }
             }
         }
+
+        long endTime = System.currentTimeMillis();
+        time = endTime-startTime;
 
         //return modified array
         return data;

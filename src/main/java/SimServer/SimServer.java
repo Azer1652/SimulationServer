@@ -1,11 +1,18 @@
 package SimServer;
 
+import Windows.Plot;
 import clients.*;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
 import extras.Quat;
+import org.jfree.ui.RefineryUtilities;
+import raytrace.Range;
+import raytrace.RayTracer;
+
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 /**
  * Created by the following students at the University of Antwerp
@@ -30,6 +37,11 @@ public class SimServer {
         //init vars and services
         init();
 
+        Plot plot = new Plot("Average Tracing Time");
+        plot.pack();
+        RefineryUtilities.centerFrameOnScreen(plot);
+        plot.setVisible(true);
+
         //Init Threads
         Thread clientAccepter = new Thread(clientReceiver);
         Thread robotUpdater = new Thread(robotHandler);
@@ -42,6 +54,7 @@ public class SimServer {
         robotUpdater.start();
 
         testRaytracing();
+        //testOverlappingRanges();
 
         //ros.disconnect();
     }
