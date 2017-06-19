@@ -1,5 +1,6 @@
 package clients;
 
+import Windows.Plot;
 import edu.wpi.rail.jrosbridge.Topic;
 import edu.wpi.rail.jrosbridge.callback.TopicCallback;
 import edu.wpi.rail.jrosbridge.messages.Message;
@@ -41,6 +42,7 @@ public class MyLaserCallback implements TopicCallback {
             if (client.externalRobots.size() > 0 && client.ownedRobots.size() > 0) {
                 //Raytrace, modify laserscan
                 float[] updatedRanges = rayTracer.rayTrace(client, laserScan, laserScan.getRanges().length);
+                Plot.update(rayTracer.time);
                 time = edu.wpi.rail.jrosbridge.primitives.Time.now();
                 h = new Header(laserScan.getHeader().getSeq(), time, new String("laser_2"));
 
