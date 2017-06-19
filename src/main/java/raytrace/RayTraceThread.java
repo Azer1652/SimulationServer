@@ -25,11 +25,9 @@ public class RayTraceThread implements Runnable
     /**
      *
      * @param carLocation
-     * @param angle
      * @param currentCarAngleRad
      * @param segments
      * @param numToTrace
-     * @param ranges
      */
     public RayTraceThread(Point3D carLocation, double currentCarAngleRad, ArrayList<Segment[]> segments, int numToTrace){
         this.carLocation = carLocation;
