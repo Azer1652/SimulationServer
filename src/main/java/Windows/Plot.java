@@ -35,7 +35,7 @@ public class Plot extends ApplicationFrame implements Runnable{
         final JFreeChart chart = ChartFactory.createXYLineChart(
                 "Tracing Time",
                 "Number of Traces",
-                "Time (ms)",
+                "Time (ns)",
                 dataset,
                 PlotOrientation.VERTICAL,
                 true,
