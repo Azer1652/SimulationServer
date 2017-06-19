@@ -43,7 +43,7 @@ public class RayTracer{
         long time = System.currentTimeMillis();
         this.length = length;
         angleDiffRad = Math.toRadians(angleEnd*2)/(length);
-        float[] data = new float[length];
+        float[] data = laserScan.getRanges();
         //Allow for one core to be idle
         int cores = Runtime.getRuntime().availableProcessors()-1;
         //int cores = 7;
@@ -129,7 +129,7 @@ public class RayTracer{
             {
                 for(Thread t : threads){
                     t.join();
-                    addHits(rayTraceThreads.get(t));
+                    addHits(rayTraceThreads.get(t), data);
                 }
 
             } catch (InterruptedException e)
@@ -147,21 +147,16 @@ public class RayTracer{
         return data;
     }
 
-    private void addHits(RayTraceThread rayTraceThread){
+    private void addHits(RayTraceThread rayTraceThread, float[] data){
         //Update data
-        Iterator<Hit> hitIterator = hits.iterator();
-        for(int i = 0; i < length; i++) // length = amount of rays (1080)
-        {
-            //Update hits
-            Hit hit = hitIterator.next();
-            if (hit != null)
-            {
-                if (hit.getTime() < ranges[i])
+        Iterator<Range> rangeIterator = rayTraceThread.ranges.iterator();
+        Iterator<Hit> hitIterator = rayTraceThread.hit.iterator();
+        while(rangeIterator.hasNext()){
+            Range range = rangeIterator.next();
+            for(int i = range.start; i < range.end; i++){
+                Hit hit = hitIterator.next();
+                if (hit.getTime() < data[i])
                     data[i] = (float) hit.getTime();
-            }
-            else
-            {
-                data[i] = ranges[i];
             }
         }
     }
