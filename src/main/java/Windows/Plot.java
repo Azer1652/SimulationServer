@@ -17,8 +17,8 @@ public class Plot extends ApplicationFrame implements Runnable{
     private static long totalTime = 0;
     private static int numTraces = 0;
 
-    final static XYSeries averageSeries = new XYSeries("Average Tracing Time (ms)");
-    final static XYSeries realSeries = new XYSeries("Current Tracing Time (ms)");
+    final static XYSeries averageSeries = new XYSeries("Average Tracing Time (ns)");
+    final static XYSeries realSeries = new XYSeries("Current Tracing Time (ns)");
 
 
 
