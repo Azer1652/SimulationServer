@@ -25,6 +25,9 @@ public class Plot extends ApplicationFrame implements Runnable{
     public Plot(String title) {
         super(title);
 
+        averageSeries.setMaximumItemCount(100);
+        realSeries.setMaximumItemCount(100);
+
         final XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(averageSeries);
         dataset.addSeries(realSeries);
@@ -48,11 +51,11 @@ public class Plot extends ApplicationFrame implements Runnable{
     public static void update(long time){
         totalTime += time;
         numTraces++;
-        averageSeries.add(numTraces, totalTime/numTraces);
-        realSeries.add(numTraces, time);
-        if(averageSeries.getItemCount() > 100){
-            averageSeries.remove(0);
-            realSeries.remove(0);
+        synchronized (averageSeries){
+            averageSeries.add(numTraces, totalTime/numTraces);
+        }
+        synchronized (realSeries){
+            realSeries.add(numTraces, time);
         }
     }
 

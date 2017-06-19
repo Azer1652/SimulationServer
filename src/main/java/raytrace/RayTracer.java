@@ -151,8 +151,10 @@ public class RayTracer{
             Range range = rangeIterator.next();
             for(int i = range.start; i < range.end; i++){
                 Hit hit = hitIterator.next();
-                if (hit.getTime() < data[i])
-                    data[i] = (float) hit.getTime();
+                if(hit != null) {
+                    if (hit.getTime() < data[i])
+                        data[i] = (float) hit.getTime();
+                }
             }
         }
     }

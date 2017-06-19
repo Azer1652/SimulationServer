@@ -57,8 +57,9 @@ public class RayTraceThread implements Runnable
             return null;
         }else if(r.size() > remaining){
             ranges.add(new Range(r.start, r.start+remaining));
-            remaining = 0;
-            return new Range(r.start+remaining, r.end);
+            Range r2 = new Range(r.start+remaining, r.end);
+            remaining =0;
+            return r2;
         }
         return null;
     }
@@ -67,16 +68,20 @@ public class RayTraceThread implements Runnable
     //Raytrace given the current values
     public void run()
     {
-        for(int i = 0; i < numToTrace; i++){
-            trace(i);
-            angle += angleDiffRad;
+        for(Range r : ranges){
+            for(int i = r.start; i < r.end; i++){
+                trace(i);
+                angle += angleDiffRad;
+            }
         }
+
     }
 
     private void trace(int i){
         //todo remove cos and sin by something simpler?
-        double dx = Math.cos(RayTracer.angleStart+(RayTracer.angleDiffRad*i)+currentCarAngleRad);
-        double dy = Math.sin(RayTracer.angleStart+(RayTracer.angleDiffRad*i)+currentCarAngleRad);
+        double angle = RayTracer.angleStartRad+(RayTracer.angleDiffRad*i);
+        double dx = Math.cos(angle+currentCarAngleRad);
+        double dy = Math.sin(angle+currentCarAngleRad);
 
         //set direction
         Ray ray = new Ray();
