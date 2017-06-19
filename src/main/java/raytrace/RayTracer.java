@@ -38,9 +38,9 @@ public class RayTracer{
      * @return
      */
     public float[] rayTrace(RealClient client, LaserScan laserScan, int length){
+        long startTime = System.nanoTime();
         this.length = length;
         angleDiffRad = Math.toRadians(angleEnd*2)/(length);
-        long startTime = System.currentTimeMillis();
         float[] data = laserScan.getRanges();
         //Allow for one core to be idle
         int cores = Runtime.getRuntime().availableProcessors()-1;
@@ -136,7 +136,7 @@ public class RayTracer{
             }
         }
 
-        long endTime = System.currentTimeMillis();
+        long endTime = System.nanoTime();
         time = endTime-startTime;
 
         //return modified array

@@ -37,7 +37,7 @@ public class SimServer {
         //init vars and services
         init();
 
-        Plot plot = new Plot("Average Tracing Time");
+        Plot plot = new Plot("Tracing Time");
         plot.pack();
         RefineryUtilities.centerFrameOnScreen(plot);
         plot.setVisible(true);
