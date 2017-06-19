@@ -1,11 +1,13 @@
 package SimServer;
 
+import Windows.Plot;
 import clients.*;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
 import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
 import extras.Quat;
+import org.jfree.ui.RefineryUtilities;
 import raytrace.Range;
 import raytrace.RayTracer;
 
@@ -35,6 +37,11 @@ public class SimServer {
         //init vars and services
         init();
 
+        Plot plot = new Plot("Average Tracing Time");
+        plot.pack();
+        RefineryUtilities.centerFrameOnScreen(plot);
+        plot.setVisible(true);
+
         //Init Threads
         Thread clientAccepter = new Thread(clientReceiver);
         Thread robotUpdater = new Thread(robotHandler);
@@ -59,6 +66,7 @@ public class SimServer {
         RealClient client = new RealClient("192.168.1.167", 9090, "test");
         client.ownedRobots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0),Quat.toQuaternion(0,0,0)), new Twist()));
         client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
+        //client.externalRobots.add(robotHandler.newRobot("inTheWay2", new Pose(new Point(3, 3, 0), Quat.toQuaternion(0, 0, 90)), new Twist()));
     }
 
     public void testOverlappingRanges(){

@@ -23,14 +23,12 @@ public class RayTracer{
     public final static double angleStart = -135;
     public final static double angleEnd = 135;
     public final static double angleStartRad = Math.toRadians(angleStart); //-0.28;
-
-    public static long totalTraceTime = 0;
-    public static long numTraces = 0;
-    public long timeToTrace;
     //private final static double angleEndRad = Math.PI-angleStartRad;
     public static double angleDiffRad;
 
     private int length;
+
+    public long time = 0;
 
     /**
      * Start a new Raytrace manager
@@ -40,9 +38,9 @@ public class RayTracer{
      * @return
      */
     public float[] rayTrace(RealClient client, LaserScan laserScan, int length){
-        long time = System.currentTimeMillis();
         this.length = length;
         angleDiffRad = Math.toRadians(angleEnd*2)/(length);
+        long startTime = System.currentTimeMillis();
         float[] data = laserScan.getRanges();
         //Allow for one core to be idle
         int cores = Runtime.getRuntime().availableProcessors()-1;
@@ -139,9 +137,7 @@ public class RayTracer{
         }
 
         long endTime = System.currentTimeMillis();
-        timeToTrace = endTime -time;
-        totalTraceTime += timeToTrace;
-        numTraces++;
+        time = endTime-startTime;
 
         //return modified array
         return data;
@@ -262,11 +258,6 @@ public class RayTracer{
         }
         return num;
     }
-
-    public static long getAverageTraceTime(){
-        return totalTraceTime/numTraces;
-    }
-
 }
 
 

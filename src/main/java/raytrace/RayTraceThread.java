@@ -33,7 +33,6 @@ public class RayTraceThread implements Runnable
      */
     public RayTraceThread(Point3D carLocation, double currentCarAngleRad, ArrayList<Segment[]> segments, int numToTrace){
         this.carLocation = carLocation;
-        this.angle = angle;
         this.currentCarAngleRad = currentCarAngleRad;
         this.segments = segments;
         this.numToTrace = numToTrace;
@@ -71,15 +70,15 @@ public class RayTraceThread implements Runnable
     public void run()
     {
         for(int i = 0; i < numToTrace; i++){
-            trace();
+            trace(i);
             angle += angleDiffRad;
         }
     }
 
-    private void trace(){
+    private void trace(int i){
         //todo remove cos and sin by something simpler?
-        double dx = Math.cos(angle+currentCarAngleRad);
-        double dy = Math.sin(angle+currentCarAngleRad);
+        double dx = Math.cos(RayTracer.angleStart+(RayTracer.angleDiffRad*i)+currentCarAngleRad);
+        double dy = Math.sin(RayTracer.angleStart+(RayTracer.angleDiffRad*i)+currentCarAngleRad);
 
         //set direction
         Ray ray = new Ray();
