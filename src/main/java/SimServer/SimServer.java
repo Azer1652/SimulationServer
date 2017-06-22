@@ -4,15 +4,9 @@ import Windows.Plot;
 import clients.*;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
-import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
 import extras.Quat;
 import org.jfree.ui.RefineryUtilities;
-import raytrace.Range;
-import raytrace.RayTracer;
-
-import java.util.ArrayList;
-import java.util.ListIterator;
 
 /**
  * Created by the following students at the University of Antwerp
@@ -25,6 +19,8 @@ public class SimServer {
 
     private ClientReceiver clientReceiver;
     public static RobotHandler robotHandler;
+
+    public static int numRobots = 0;
 
     /**
      * New RSMS starts client accepting service and robot updater
@@ -66,23 +62,39 @@ public class SimServer {
         RealClient client = new RealClient("192.168.1.167", 9090, "test");
         client.ownedRobots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0),Quat.toQuaternion(0,0,0)), new Twist()));
         client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
-        client.externalRobots.add(robotHandler.newRobot("inTheWay2", new Pose(new Point(3, 3, 0), Quat.toQuaternion(0, 0, 90)), new Twist()));
+        numRobots = 1;
+
+        //addExternalRobots(client);
+        //addClients();
+
     }
 
-    public void testOverlappingRanges(){
-        RayTracer tracer = new RayTracer();
+    private void addClients(){
+        while(true){
+            try {
+                Thread.sleep(50);
+                RealClient client = new RealClient("192.168.1.167", 9090, "test");
+                client.ownedRobots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0),Quat.toQuaternion(0,0,0)), new Twist()));
+                client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
+                numRobots++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-        ArrayList<Range> ranges = new ArrayList<Range>();
-        ranges.add(new Range(0, 50));
-        ranges.add(new Range(25, 75));
+        }
+    }
 
-        ranges.add(new Range(100, 200));
-        ranges.add(new Range(90, 220));
+    private void addExternalRobots(Client client){
+        while(true){
+            try {
+                Thread.sleep(50);
+                client.externalRobots.add(robotHandler.newRobot("inTheWay2", new Pose(new Point(3, 3, 0), Quat.toQuaternion(0, 0, 90)), new Twist()));
+                numRobots++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-        ranges.add(new Range(250, 300));
-        ranges.add(new Range(240, 290));
-
-        ranges = tracer.processOverlappingRanges(ranges);
+        }
     }
 
     /**

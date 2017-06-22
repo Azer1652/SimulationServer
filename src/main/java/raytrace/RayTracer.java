@@ -38,15 +38,14 @@ public class RayTracer{
      * @return
      */
     public float[] rayTrace(RealClient client, LaserScan laserScan, int length){
-        long startTime = System.nanoTime();
         this.length = length;
         angleDiffRad = Math.toRadians(angleEnd*2)/(length);
+        long startTime = System.nanoTime();
         float[] data = laserScan.getRanges();
         //Allow for one core to be idle
         int cores = Runtime.getRuntime().availableProcessors()-1;
         //int cores = 7;
-        Map<RayTraceThread, List<Range>> rayTraceThreadsMap = new HashMap<>();
-        Map<Thread, RayTraceThread> rayTraceThreads = new HashMap<>();
+        ArrayList<RayTraceThread> rayTraceThreads = new ArrayList<>();
         ArrayList<Thread> threads = new ArrayList<>();
         ArrayList<Hit> hits = new ArrayList<>();
 
@@ -64,75 +63,62 @@ public class RayTracer{
             double current = angleStartRad;
             double currentCarAngleRad = Quat.toEulerianAngle(robot.pose.getOrientation())[2];
 
-            //get segments to trace against (robot edges) and robot angles (start and end of tracing range)
+            //segments to trace against (robot edges)
             ArrayList<Segment[]> segments = new ArrayList<>();
-            ArrayList<Range> rangeArrayList = new ArrayList<>();
             for(Robot r : externalRobots)
             {
+                robotToAngles(r, position);
                 segments.add(r.getSegments());
-                rangeArrayList.add(robotToAngles(r));
             }
 
-            //Get Final Tracing Ranges
-            rangeArrayList = processOverlappingRanges(rangeArrayList);
-
-            //Collections.sort(rangeArrayList);
-            int numRangesToTrace = countNumRanges(rangeArrayList);
-            int numToTracePerThread = numRangesToTrace/cores;
+            int numToTrace = length/cores;
 
             //Generate Threads
-            //Take from ranges and fill threads untill equally spread
-            ListIterator<Range> it = rangeArrayList.listIterator();
-            Range r = null;
-            if(it.hasNext()) {
-                r = it.next();
-                for (int m = 0; m < cores; m++) {
-                    //thread for core
-                    RayTraceThread rayTraceThread = new RayTraceThread(new Point3D(position[0], position[1], position[2]), currentCarAngleRad, segments, numToTracePerThread);
-
-                    while(!rayTraceThread.full()){
-                        Range r2 = rayTraceThread.fill(r);
-                        if(r2 != null) {
-                            it.add(r2);
-                            it.previous();
-                        }
-                        r = it.next();
-                    }
-
-                    //setup and start thread
-                    Thread t = new Thread(rayTraceThread);
-                    rayTraceThreads.put(t, rayTraceThread);
-                    threads.add(t);
-                    t.start();
-                }
-            }
-
-            //caclulate remainder
-            numToTracePerThread = numRangesToTrace%cores;
-            if(numRangesToTrace != 0) {
-                //thread for core
-                RayTraceThread rayTraceThread = new RayTraceThread(new Point3D(position[0], position[1], position[2]), currentCarAngleRad, segments, numToTracePerThread);
-
-                rayTraceThread.fill(r);
-
-                //setup and start thread
-                Thread t = new Thread(rayTraceThread);
-                rayTraceThreads.put(t, rayTraceThread);
-                threads.add(t);
-                t.start();
+            for(int m = 0; m<cores; m++)
+            {
+                rayTraceThreads.add(new RayTraceThread(new Point3D(position[0],position[1],position[2]), current+(angleDiffRad*numToTrace)*(m), currentCarAngleRad, segments, numToTrace));
+                threads.add(new Thread(rayTraceThreads.get(m)));
+                threads.get(m).start();
             }
 
             //Wait for threads
             try
             {
-                for(Thread t : threads){
-                    t.join();
-                    addHits(rayTraceThreads.get(t), data);
+                for(int j = 0; j< cores; j++){
+                    threads.get(j).join();
+                    hits.addAll(rayTraceThreads.get(j).hit);
                 }
 
             } catch (InterruptedException e)
             {
                 e.printStackTrace();
+            }
+
+            //caclulate remainder
+            numToTrace = length%cores;
+            RayTraceThread t = new RayTraceThread(new Point3D(position[0],position[1],position[2]), current+(angleDiffRad*numToTrace)*(cores), currentCarAngleRad, segments, numToTrace);
+            t.run();
+            hits.addAll(t.hit);
+
+            //Update data
+            Iterator<Hit> hitIterator = hits.iterator();
+            for(int i = 0; i < length; i++) // length = amount of rays (1080)
+            {
+                //Update hits
+                Hit hit = hitIterator.next();
+                if (hit != null)
+                {
+                    if (hit.getTime() < ranges[i])
+                        data[i] = (float) hit.getTime();
+                }
+                else
+                {
+                    data[i] = ranges[i];
+                }
+                if(hit != null) {
+                    if (hit.getTime() < data[i])
+                        data[i] = (float) hit.getTime();
+                }
             }
         }
 
@@ -141,22 +127,6 @@ public class RayTracer{
 
         //return modified array
         return data;
-    }
-
-    private void addHits(RayTraceThread rayTraceThread, float[] data){
-        //Update data
-        Iterator<Range> rangeIterator = rayTraceThread.ranges.iterator();
-        Iterator<Hit> hitIterator = rayTraceThread.hit.iterator();
-        while(rangeIterator.hasNext()){
-            Range range = rangeIterator.next();
-            for(int i = range.start; i < range.end; i++){
-                Hit hit = hitIterator.next();
-                if(hit != null) {
-                    if (hit.getTime() < data[i])
-                        data[i] = (float) hit.getTime();
-                }
-            }
-        }
     }
 
     // Conversion Angles to X-th ray
@@ -175,7 +145,7 @@ public class RayTracer{
         return (int) Math.floor(angle/(angleEnd*2)*(this.length-1));
     }
 
-    private Range robotToAngles(Robot robot){
+    private double[] robotToAngles(Robot robot, double[] position){
         Corners c = robot.getCorners();
 
         List<Integer> values = new ArrayList<>();
@@ -193,73 +163,12 @@ public class RayTracer{
 
         Collections.sort(values);
 
-        int start = values.get(0);
-        int end = values.get(3);
+        double start = values.get(0);
+        double end = values.get(3);
 
-        return new Range(start, end);
+        return new double[]{start, end};
     }
 
-    public ArrayList<Range> processOverlappingRanges(ArrayList<Range> rangeArrayList){
-        ArrayList<Range> returnArray = new ArrayList<>();
-
-        ArrayList<Range> toRemove = new ArrayList<>();
-
-        ListIterator<Range> it = rangeArrayList.listIterator();
-        while(it.hasNext()){
-            Range r = it.next();
-            if(!toRemove.contains(r)){
-                int initialStart;
-                int start = r.start;
-                int initialEnd;
-                int end = r.end;
-                ArrayList<Range> temp = (ArrayList<Range>) rangeArrayList.clone();
-
-                //Expand
-                do {
-                    initialStart = start;
-                    initialEnd = end;
-                    ListIterator<Range> iterator = temp.listIterator();
-                    while (iterator.hasNext()) {
-                        Range r2 = iterator.next();
-                        if (r2.equals(r))
-                            if (iterator.hasNext()) {
-                                iterator.remove();
-                                r2 = iterator.next();
-                            }
-
-                        if (r2.start < r.start) {
-                            if (r2.end > r.start) {
-                                start = r2.start;
-                                iterator.remove();
-                                toRemove.add(r2);
-                                if (r2.end > r.end)
-                                    end = r2.end;
-                            }
-                        } else if (r.start < r2.start) {
-                            if (r.end > r2.start) {
-                                if (r.end < r2.end) {
-                                    iterator.remove();
-                                    toRemove.add(r2);
-                                    end = r2.end;
-                                }
-                            }
-                        }
-                    }
-                } while (initialStart != start || initialEnd != end);
-                returnArray.add(new Range(start, end));
-            }
-            it.remove();
-        }
-        return returnArray;
-    }
-
-    private int countNumRanges(List<Range> ranges){
-        int num = 0;
-        for(Range r : ranges){
-            num += r.end-r.start;
-        }
-        return num;
-    }
 }
 
 
