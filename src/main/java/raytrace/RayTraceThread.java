@@ -15,8 +15,7 @@ public class RayTraceThread implements Runnable
     Point3D carLocation;
     double angle;
     double currentCarAngleRad;
-    int numToTrace;
-    ArrayList<Hit> hit;
+    Hit hit = null;
     ArrayList<Segment[]> segments;
 
     /**
@@ -25,28 +24,18 @@ public class RayTraceThread implements Runnable
      * @param angle
      * @param currentCarAngleRad
      * @param segments
-     * @param numToTrace
      */
-    public RayTraceThread(Point3D carLocation, double angle, double currentCarAngleRad, ArrayList<Segment[]> segments, int numToTrace){
+    public RayTraceThread(Point3D carLocation, double angle, double currentCarAngleRad, ArrayList<Segment[]> segments){
         this.carLocation = carLocation;
         this.angle = angle;
         this.currentCarAngleRad = currentCarAngleRad;
         this.segments = segments;
-        this.numToTrace = numToTrace;
-        this.hit = new ArrayList<>();
     }
 
     @Override
     //Raytrace given the current values
     public void run()
     {
-        for(int i = 0; i < numToTrace; i++){
-            trace();
-            angle += angleDiffRad;
-        }
-    }
-
-    private void trace(){
         //todo remove cos and sin by something simpler?
         double dx = Math.cos(angle+currentCarAngleRad);
         double dy = Math.sin(angle+currentCarAngleRad);
@@ -72,6 +61,6 @@ public class RayTraceThread implements Runnable
                 }
             }
         }
-        this.hit.add(bestHit);
+        this.hit = bestHit;
     }
 }

@@ -38,10 +38,8 @@ public class RayTracer{
      * @return
      */
     public float[] rayTrace(RealClient client, LaserScan laserScan, int length){
-        this.length = length;
-        angleDiffRad = Math.toRadians(angleEnd*2)/(length);
         long startTime = System.nanoTime();
-        float[] data = laserScan.getRanges();
+        float[] data = new float[length];
         //Allow for one core to be idle
         int cores = Runtime.getRuntime().availableProcessors()-1;
         //int cores = 7;
@@ -63,62 +61,62 @@ public class RayTracer{
             double current = angleStartRad;
             double currentCarAngleRad = Quat.toEulerianAngle(robot.pose.getOrientation())[2];
 
-            //segments to trace against (robot edges)
+            int i = 0;
+
             ArrayList<Segment[]> segments = new ArrayList<>();
             for(Robot r : externalRobots)
             {
-                robotToAngles(r, position);
                 segments.add(r.getSegments());
             }
-
-            int numToTrace = length/cores;
 
             //Generate Threads
             for(int m = 0; m<cores; m++)
             {
-                rayTraceThreads.add(new RayTraceThread(new Point3D(position[0],position[1],position[2]), current+(angleDiffRad*numToTrace)*(m), currentCarAngleRad, segments, numToTrace));
+                rayTraceThreads.add(new RayTraceThread(new Point3D(position[0],position[1],position[2]), current, currentCarAngleRad+angleDiffRad*m, segments));
                 threads.add(new Thread(rayTraceThreads.get(m)));
                 threads.get(m).start();
             }
 
-            //Wait for threads
-            try
+            //rayTrace
+            while (i < length) // length = amount of rays (1080)
             {
-                for(int j = 0; j< cores; j++){
-                    threads.get(j).join();
-                    hits.addAll(rayTraceThreads.get(j).hit);
+                for(int m = 0; m<cores; m++)
+                {
+                    rayTraceThreads.set(m, new RayTraceThread(new Point3D(position[0],position[1],position[2]), current, currentCarAngleRad+angleDiffRad*m, segments));
+                    threads.set(m, new Thread(rayTraceThreads.get(m)));
+                    threads.get(m).start();
                 }
 
-            } catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+                //Wait for threads
+                try
+                {
+                    for(int j = 0; j< cores; j++){
+                        threads.get(j).join();
+                        hits.add(rayTraceThreads.get(j).hit);
+                    }
 
-            //caclulate remainder
-            numToTrace = length%cores;
-            RayTraceThread t = new RayTraceThread(new Point3D(position[0],position[1],position[2]), current+(angleDiffRad*numToTrace)*(cores), currentCarAngleRad, segments, numToTrace);
-            t.run();
-            hits.addAll(t.hit);
+                } catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
 
-            //Update data
-            Iterator<Hit> hitIterator = hits.iterator();
-            for(int i = 0; i < length; i++) // length = amount of rays (1080)
-            {
                 //Update hits
-                Hit hit = hitIterator.next();
-                if (hit != null)
-                {
-                    if (hit.getTime() < ranges[i])
-                        data[i] = (float) hit.getTime();
+                for(int k = 0; k<cores; k++){
+                    Hit hit = rayTraceThreads.get(k).hit;
+                    if (hit != null)
+                    {
+                        if (hit.getTime() < ranges[i+k])
+                            data[i+k] = (float) hit.getTime();
+                    }
+                    else
+                    {
+                        if(i+k+1 <= length)
+                            data[i+k] = ranges[i+k];
+                    }
                 }
-                else
-                {
-                    data[i] = ranges[i];
-                }
-                if(hit != null) {
-                    if (hit.getTime() < data[i])
-                        data[i] = (float) hit.getTime();
-                }
+
+                current += angleDiffRad*cores;
+                i += cores;
             }
         }
 
