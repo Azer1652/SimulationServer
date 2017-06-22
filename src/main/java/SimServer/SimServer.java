@@ -71,7 +71,7 @@ public class SimServer {
         numRobots = 1;
 
         //addExternalRobots(client);
-        addClients();
+        //addClients();
 
     }
 
@@ -90,8 +90,8 @@ public class SimServer {
         }
     }
 
-    private void addExternalRobots(Client client){
-        while(true){
+    private void addExternalRobots(Client client) {
+        while (true) {
             try {
                 Thread.sleep(20);
                 client.externalRobots.add(robotHandler.newRobot("inTheWay2", new Pose(new Point(3, 3, 0), Quat.toQuaternion(0, 0, 90)), new Twist()));
@@ -99,6 +99,8 @@ public class SimServer {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
 
     public void testOverlappingRanges(){
         RayTracer tracer = new RayTracer();
