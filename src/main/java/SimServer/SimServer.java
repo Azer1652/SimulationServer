@@ -64,6 +64,27 @@ public class SimServer {
         client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
         numRobots = 1;
 
+        //addExternalRobots(client);
+        addClients();
+
+    }
+
+    private void addClients(){
+        while(true){
+            try {
+                Thread.sleep(50);
+                RealClient client = new RealClient("192.168.1.167", 9090, "test");
+                client.ownedRobots.add(robotHandler.newRobot("main", new Pose(new Point(0, 0, 0),Quat.toQuaternion(0,0,0)), new Twist()));
+                client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
+                numRobots++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private void addExternalRobots(Client client){
         while(true){
             try {
                 Thread.sleep(20);
