@@ -1,6 +1,7 @@
 package clients;
 
 import Windows.Plot;
+import edu.wpi.rail.jrosbridge.JRosbridge;
 import edu.wpi.rail.jrosbridge.Topic;
 import edu.wpi.rail.jrosbridge.callback.TopicCallback;
 import edu.wpi.rail.jrosbridge.messages.Message;
@@ -32,7 +33,10 @@ public class MyLaserCallback implements TopicCallback {
     public void handleMessage(Message message) {
         //Get laserscan
         LaserScan laserScan = LaserScan.fromMessage(message);
-        Topic updatedLaserScan = new Topic(client.ros, "/updatedScan", "sensor_msgs/LaserScan");
+        //Without compression
+        //Topic updatedLaserScan = new Topic(client.ros, "/updatedScan", "sensor_msgs/LaserScan");
+        //With compression
+        Topic updatedLaserScan = new Topic(client.ros, "/updatedScan", "sensor_msgs/LaserScan", JRosbridge.CompressionType.png);
         edu.wpi.rail.jrosbridge.primitives.Time time;
         Header h;
 
