@@ -4,9 +4,15 @@ import Windows.Plot;
 import clients.*;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
+import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
 import edu.wpi.rail.jrosbridge.messages.geometry.Twist;
 import extras.Quat;
 import org.jfree.ui.RefineryUtilities;
+import raytrace.Range;
+import raytrace.RayTracer;
+
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 /**
  * Created by the following students at the University of Antwerp
@@ -64,8 +70,8 @@ public class SimServer {
         client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
         numRobots = 1;
 
-        //addExternalRobots(client);
-        addClients();
+        addExternalRobots(client);
+        //addClients();
 
     }
 
@@ -84,18 +90,35 @@ public class SimServer {
         }
     }
 
-    private void addExternalRobots(Client client){
-        while(true){
+    private void addExternalRobots(Client client) {
+        //while (true) {
+        for(int i=1;i<500;i++){
             try {
-                Thread.sleep(20);
+                Thread.sleep(5);
                 client.externalRobots.add(robotHandler.newRobot("inTheWay2", new Pose(new Point(3, 3, 0), Quat.toQuaternion(0, 0, 90)), new Twist()));
                 numRobots++;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
+
+    /*
+    public void testOverlappingRanges(){
+        RayTracer tracer = new RayTracer();
+
+        ArrayList<Range> ranges = new ArrayList<Range>();
+        ranges.add(new Range(0, 50));
+        ranges.add(new Range(25, 75));
+
+        ranges.add(new Range(100, 200));
+        ranges.add(new Range(90, 220));
+
+        ranges.add(new Range(250, 300));
+        ranges.add(new Range(240, 290));
+
+        ranges = tracer.processOverlappingRanges(ranges);
+    }*/
 
     /**
      * Init Services

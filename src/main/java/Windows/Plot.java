@@ -71,7 +71,7 @@ public class Plot extends ApplicationFrame implements Runnable{
 
         numRobotsDataset.addSeries(numRobotsSeries);
 
-        NumberAxis rangeAxis2 = new NumberAxis("Number of Clients");
+        NumberAxis rangeAxis2 = new NumberAxis("Number of Robots");
         rangeAxis2.setUpperMargin(1.00);  // to leave room for price line
         plot.setRangeAxis(1, rangeAxis2);
         plot.setDataset(1, numRobotsDataset);
