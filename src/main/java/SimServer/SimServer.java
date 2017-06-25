@@ -64,7 +64,7 @@ public class SimServer {
         client.externalRobots.add(robotHandler.newRobot("inTheWay", new Pose(new Point(3, 0, 0), Quat.toQuaternion(0,0,90)), new Twist()));
         numRobots = 1;
 
-        //addExternalRobots(client);
+        addExternalRobots(client);
         //addClients();
 
     }
@@ -85,7 +85,8 @@ public class SimServer {
     }
 
     private void addExternalRobots(Client client){
-        while(true){
+        //while(true){
+        for(int i =0; i<500; i++){
             try {
                 Thread.sleep(50);
                 client.externalRobots.add(robotHandler.newRobot("inTheWay2", new Pose(new Point(3, 3, 0), Quat.toQuaternion(0, 0, 90)), new Twist()));

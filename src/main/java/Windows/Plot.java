@@ -19,14 +19,17 @@ import org.jfree.ui.ApplicationFrame;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by arthu on 19/06/2017.
  */
 public class Plot extends ApplicationFrame implements Runnable{
 
-    private static long totalTime = 0;
     private static int numTraces = 0;
+
+    private static ArrayList<Long> runningAverage = new ArrayList<>();
 
     final static XYSeries averageSeries = new XYSeries("Average Tracing Time (ns)");
     final static XYSeries realSeries = new XYSeries("Current Tracing Time (ns)");
@@ -71,7 +74,7 @@ public class Plot extends ApplicationFrame implements Runnable{
 
         numRobotsDataset.addSeries(numRobotsSeries);
 
-        NumberAxis rangeAxis2 = new NumberAxis("Number of Clients");
+        NumberAxis rangeAxis2 = new NumberAxis("Number of Robots");
         rangeAxis2.setUpperMargin(1.00);  // to leave room for price line
         plot.setRangeAxis(1, rangeAxis2);
         plot.setDataset(1, numRobotsDataset);
@@ -86,11 +89,18 @@ public class Plot extends ApplicationFrame implements Runnable{
     }
 
     public static void update(long time){
-        totalTime += time;
         numTraces++;
-        synchronized (averageSeries){
-            averageSeries.add(numTraces, totalTime/numTraces);
+
+        if(runningAverage.size() < 20) {
+            runningAverage.add(new Long(time));
+        }else{
+            runningAverage.remove(0);
+            runningAverage.add(new Long(time));
         }
+        synchronized (averageSeries) {
+            averageSeries.add(numTraces, runningAverage.stream().mapToLong(Long::longValue).sum() / 20);
+        }
+
         synchronized (realSeries){
             realSeries.add(numTraces, time);
         }
